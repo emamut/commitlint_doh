@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" class="lang="en"">
+  <head>
+    <meta charset="UTF-8">
+    <title>commitlint_d&#39;oh!</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.7/dist/flatly/bootstrap.min.css" crossorigin="anonymous">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+              background-color:#dce9f6;
+              font-family: calibri, sans-serif, Arial, 'IBM Plex Sans',  'Helvetica Neue';
+              font-size: 14pt;
+              padding-top: 120px;
+          }
+  	    .bx--copy-btn{
+	            background-color:#dce9f6;
+	        }
+        #copy_to_clipboard:active {
+          border-color: rgb(36, 174, 96);
+          transform: translateY(4px);
+        }
+        .form-control {
+              font-family: consolas;
+        }
+        #commit_message {
+              font-family: consolas;
+        }
+    </style>
+
+  </head>
+
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark">
+    <div class="container-fluid d-flex">
+        <a class="navbar-brand" href="https://commitlint.online" target="_blank">COMMITLINT_D'oh!</a>
+        <span class="badge text-bg-secondary">lint commit messages online </span>
+        <ul class="navbar-nav ms-md-auto">
+          <li class="nav-item">
+              <a target="_blank" rel="noopener" class="nav-link" href="https://github.com/VividVenturesLLC/commitlint_doh">
+
+                <i class="bi bi-github">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-github" viewBox="0 0 16 16">
+                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8"/>
+                  </svg>
+                </i>
+                <span class="d-lg-none ms-2">GitHub</span>
+              </a>
+          </li>
+          <li class="nav-item">
+            <h5 class="ml-auto"><div id="js_version" class="badge bg-danger ml-auto">HALTED</div></h5>
+          </li>
+        </ul>
+        <ul class="navbar-nav">
+          <li class="dropdown">
+            <a class="nav-link dropdown-toggle text-bg-primary" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Conventional
+             </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="https://www.conventionalcommits.org" target="_blank">conventionalcommits.org</a></li>
+              <li><a class="dropdown-item" href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html" target="blank">well formed</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#"><abbr title="Command Line Interface">cli</abbr></li>
+              <li><a class="dropdown-item" href="https://github.com/opensource-nepal/commitlint" target="_blank">-Python</a></li>
+              <li><a class="dropdown-item" href="">-Javascript</a></li>
+              <li><a class="dropdown-item" href="https://commitlint.js.org/#/" target="_blank">--commitlint.js</a></li>
+              <li><a class="dropdown-item" href="https://github.com/commitizen/cz-cli" target="_blank">--commitizen</a></li>
+              <li><a class="dropdown-item" href="https://docs.rs/git-conventional/latest/git_conventional/" target="_blank">-Rust</a></li>
+              <li><a class="dropdown-item" href="https://pkg.go.dev/github.com/conventionalcommit/commitlint" target="_blank">-Go</a></li>
+            </ul>
+          </li><!-- end of dropdown -->
+        </ul>
+    </div><!-- end container-fluid-->
+  </nav><!-- end navbar -->
+
+
+  <div class="container border">
+    <div class="row justify-content-center"><!-- start main row-->
+    <div class="col-8">
+      <div class="linterContainer container d-grid gap-1">
+        <div  class="row"><!--begin row 1-->
+          <div class="col">
+              <select id="commit_type" title="commit_type: must be one of the options" class="form-control form-control-lg" data-toggle="tooltip" data-placement="top">
+                <option value="" selected>&lt;type&gt;</option>
+                <option value="build">build(build system or external dependencies changes)</option>
+                <option value="chore">chore(maintenance not directly affecting apps function or ux)</option>
+                <option value="ci">ci(CI configurations and scripts changes)</option>
+                <option value="docs">docs(documentation)</option>
+                <option value="feat">feat(feature)</option>
+                <option value="fix">fix(bug fix)</option>
+                <option value="perf">perf(improves performance)</option>
+                <option value="refactor">refactor(neither fixes a bug or adds a feature)</option>
+                <option value="revert">revert(reverts a previous commit)</option>
+                <option value="style">style(formatting, missing semi colons, etc.)</option>
+                <option value="test">test(adding missing tests)</option>
+            </select>
+          </div><!-- end column 1-->
+          <div class="col"><!--start column 2-->
+             <select id="commit_exclamation" title="! (optional)" class="form-control form-control-lg" data-toggle="tooltip" data-placement="top">
+                 <option value="">&lt;exclamation&gt; &lt;breaking change&gt;</option>
+                 <option value="!">!</option>
+             </select>
+
+          </div><!-- end column 2-->
+        </div><!--end row1-->
+
+        <div class="row"><!--start row 2-->
+          <div class="col">
+
+             <input id="commit_scope" type="text" placeholder="&lt;scope&gt;" class="form-control form-control-lg" title="commit_scope: could be anything specifying place of commit change. For example $location, $browser, $compile, $rootScope, ngHref, ngClick, ngView, etc ..." data-toggle="tooltip" data-placement="top">
+
+          </div><!--end column1 -->
+          <div class="col">
+          </div><!--end column2 -->
+        </div><!--end row2-->
+
+        <div class="row">
+          <div class="col">
+              <input id="commit_subject" type="text" class="form-control form-control-lg" placeholder="&lt;subject&gt; succinct description of the change" class="form-control"  title="commit_subject: use imperitive, present tense: &quot;change&quot; not &quot;changed&quot; nor &quot;changes&quot; - do not capitalize first letter - no dot (.) at the end" data-toggle="tooltip" data-placement="top">
+
+  </div></div>
+
+        <div class="row"><div class="col">
+
+  <textarea id="commit_body" placeholder="<body> (optional)" wrap="soft" class="form-control form-control-lg" style="resize: none; overflow-y: scroll; height: 150px;" title="commit_body: use imperitive, present tense: &quot;change&quot; not &quot;changed&quot; nor &quot;changes&quot; - includes motivation for the change and contrasts with previous behavior" data-toggle="tooltip" data-placement="top"></textarea>
+
+  </div></div>
+
+  <div  class="row">
+    <div  class="col">
+      <!--------------------------------------------------------------------->
+      <div class="accordion" id="accordionFooter"> <!-- start accordion-->
+        <div class="accordion-item"> <!-- start accordion-item-->
+          <h2 class="accordion-header"> <!-- start accordion-header -->
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              Footer Options
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+            <div class="accordion-body">Text
+
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="footer_breaking_changes" >
+                  <label class="form-check-label" for="footer_breaking_changes">BREAKING CHANGE:</label><small>&#160;(click exclamation above)</small>
+               </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="footer_fixes" >
+                  <label class="form-check-label" for="footer_fixes">Fixes: #</label>
+               </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="footer_deprecated" >
+                  <label class="form-check-label" for="footer_deprecated">Deprecated:</label>
+               </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="footer_closes" >
+                  <label class="form-check-label" for="footer_closes">Closes: #</label>
+               </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="footer_reviewed" >
+                  <label class="form-check-label" for="footer_reviewed">Reviewed-by:</label>
+               </div>
+            </div> <!-- end accordion-body -->
+          </div> <!-- end accordion-collapse -->
+        </div> <!-- end accordion-item-->
+      </div> <!-- end accordion-->
+      <!--------------------------------------------------------------------->
+
+
+  <textarea id="commit_footer" placeholder="<footer> (optional)" wrap="soft"
+    class="form-control form-control-lg"
+    style="resize: none; overflow-y: scroll; height: auto;"
+    title="commit_footer: Contains any information about breaking changes with the description of the change, justification and migration notes - reference GitHub issues that this commit Closes. Such as, closed bugs should be listed in the footer prefixed with &quot;Closes&quot; keyword like: &quot;Closes: #42, #142&quot;" data-toggle="tooltip" data-placement="top"></textarea>
+
+  </div></div>
+        <div class="row">
+          <div class="col">
+            <div id="commit_message_container" role="alert" aria-live="polite" aria-atomic="true" class="alert alert-warning">
+              <strong id="commit_message_warning">
+              Empty commit message
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div class="row "> <!--add d-none  to hide row -->
+          <div class="col">
+            <div class="card"><!---->
+             <div class="card-header">
+               <h4 class="card-title">Commit Message:</h4><!---->
+             </div>
+             <div class="card-body">
+                 <p id="commit_message" class="card-text" >your commit message will appear here</p>
+                 <!-- hidden helper divs for work in process -->
+                 <div id="wip_message_to_be_linted" hidden>message to be linted</div>
+                 <!-- end hidden helper divs for work in process -->
+
+                 <button id="copy_to_clipboard"  type="button" class="btn btn-primary" disabled="disabled">
+                 Copy to Clipboard
+                 </button>
+             </div>
+            </div>
+          </div>
+        </div>
+
+        </div></div>
+    </div>  <!-- end main rown-->
+  </div><!--end container-->
+
+
+  <div><!-- spacer -->
+    &#160;
+  </div>
+
+
+
+  <!-------------------------------------------------------->
+  <div class="container"><!-- start cards container -->
+    <div class="row justify-content-center"><!-- start row1 -->
+      <div class="col"><!-- start col1 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+              <h5><strong>About</strong></h5>
+          </div>
+          <div class="card-body">
+              <p class="card-text">Commitlint_D'oh! is an open source git
+                commit message editor intended to help you privately write
+                compliant conventional messages without changes to your
+                development environment.  It can be used online (not private),
+                or downloaded for private offline use.</p>
+              <a id="zip_file_button" href="#" class="btn btn-primary">Download zip file</a>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div><!-- end col1 -->
+      <div class="col"><!-- start col2 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title"><strong>Usage</strong></h5>
+          </div>
+          <div class="card-body">
+              <p class="card-text">
+                Complete the form with <br> &lt;type&gt;<br> &lt;scope&gt;<br> and &lt;subject&gt;<br>
+                of your commit. Messages will hint how to comply with the
+                <abbr title="conventionalcommits.org">conventional</abbr>
+                guideline.  The "Copy to Clipboard" button is
+                enabled when the first line of the commit message passes the
+                <abbr title="Regular Expression">regex</abbr> linter,
+                click the copy button then paste into your git client.
+              </p>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div><!-- end col2 -->
+      <div class="col"><!-- start col3 -->
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+            <div class="card-header">
+              <h5 class="card-title"><strong>Benefits</strong></h5>
+            </div>
+
+          <div class="card-body">
+              <ul>
+                <li>Offline privacy</li>
+                <li>Message hints while editing</li>
+                <li>Reduced typing</li>
+                <li>Language/project agnostic</li>
+                <li>Prescribed formatting</li>
+                <li>Free</li>
+              </ul>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+      </div><!-- end col3 -->
+     </div><!-- end row1 -->
+
+
+    <div><!-- spacer -->
+      &#160;
+   </div>
+
+
+    <div class="row"><!-- start row2 -->
+      <div class="col"><!-- start col1 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title"><strong>FAQ - Conventional</strong></h5>
+          </div>
+          <div class="card-body">
+              <ul>
+                <li>Why 50 characters limit
+                  <a href="https://cbea.ms/git-commit/#limit-50" target="_blank">?</a>
+                <li>Why 72 characters wrap
+                  <a href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html" target="_blank">?</a>
+                </li>
+                <li> Case sensitivity none <a href="https://www.google.com/search?&q=commitlint+case+sensitivity" target="_blank">?</a>
+                </li>
+                <li>Special characters</li>
+                   <ul>
+                     <li>\ (esc) <a href="https://duckduckgo.com/?t=ffab&q=Backslashes+in+conventional+commit+messages+can+cause+rendering+issues&ia=web" target="_blank">never</a> </li>
+                     <li># not first character</li>
+                   </ul>
+                <li>BREAKING CHANGE <a href="https://github.com/conventional-commits/conventionalcommits.org/issues/535" target="_blank">
+                  <abbr title="issue 535">?</abbr>
+                  </a>
+                </li>
+                <li>D'oh <a href="https://en.wikipedia.org/wiki/D%27oh!" target="_blank">
+                  <abbr title="The sound I make when my commit msg fails to lint">?</abbr>
+                  </a>
+                </li>
+              </ul>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div><!-- end col1 -->
+      <div class="col"><!-- start col2 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title"><strong>Tutorials</strong></h5>
+          </div>
+          <div class="card-body">
+              <ul>
+                <li>A note <a href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html" target="_blank">tpope</a></li>
+                <li>How to - <a href="https://cbea.ms/git-commit/" target="_blank">cbea</a></li>
+                <li>Guidelines <a href="https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md" target="_blank">Angular</a></li>
+                <li>Cheatsheet - <a href="https://www.bavaga.com/blog/2025/01/27/my-ultimate-conventional-commit-types-cheatsheet/" target="_blank">Bavaga</a></li>
+              </ul>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div><!-- end col2 -->
+
+      <div class="col"><!-- start col3 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title"><strong>Credits</strong></h5>
+          </div>
+          <div class="card-body">
+              <p class="card-text">Code was copy and pasted from:</p>
+              <ul>
+                <li>lint regex <a href="https://gist.github.com/marcojahn/482410b728c31b221b70ea6d2c433f0c" target="_blank">marcojahn</a></li>
+                <li>MutationObserver
+                    <ul>
+                      <li>
+                        <a href="https://stackoverflow.com/questions/37452164/call-function-on-change-of-value-inside-p-tag" target="_blank">SO</a></li>
+                      <li>
+                        <a href="https://hacks.mozilla.org/2012/05/dom-mutationobserver-reacting-to-dom-changes-without-killing-browser-performance/" target="_blank">Mozilla</a>
+                      </li>
+                  </ul>
+                </li>
+                <li>getbootstrap <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank">docs</a>
+                </li>
+                <li>
+                  <a href="https://www.w3schools.com/" target="_blank" title="W3 Schools">W3S</a> and
+                  <a href="https://www.geeksforgeeks.org" target="_blank" title="Geeks For Geeks">GFG</a> every key word!
+                </li>
+                <li>
+                   wrapText <a href="https://copilot.microsoft.com/" target="_blank">MS Copilot</a> ftw
+                </li>
+                <li>
+                  addHangingIndent <a href="https://gemini.google.com/app" target="_blank">Google Gemini</a> ftw
+                </li>
+              </ul>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div ><!-- end col3 -->
+
+
+    </div><!-- end row2 -->
+
+    <div class="row"><!-- start row3 -->
+      <div class="col"><!-- start col1 -->
+
+        <!-- start card ------------------------------------------->
+        <div class="card" style="width: 18rem;">
+          <div class="card-header">
+            <h5 class="card-title"><strong>Get the code<strong></h5>
+          </div>
+          <div class="card-body">
+              <p class="card-text">
+                <ul>
+                  <li>
+                       <a href="https://github.com/VividVenturesLLC/commitlint_doh" target="_blank">Github</a>
+                  </li>
+                  <li>
+                       <a href="https://codepen.io/NorthDecoder/pen/GgpdwRy" target="_blank">Codepen</a>
+                  </li>
+                </ul>
+              </p>
+          </div>
+        </div>
+        <!-- end card --------------------------------------------->
+
+      </div><!-- end col1 -->
+      <div class="col"><!-- start col2 -->
+
+
+      </div><!-- end col2 -->
+    </div><!-- end row3 -->
+
+
+  </div><!-- end cards container -->
+  <!-------------------------------------------------------->
+
+
+
+<!-- Expect to find a script tag like this, near here
+<script src="./script.js"></script>
+assuming the script is stored right next to index.html
+in the directory -->
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>
