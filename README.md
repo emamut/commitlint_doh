@@ -1,6 +1,8 @@
 # commitlint_d'oh! 🚀
 
-Editor y validador previo (*pre-linter*) interactivo en el navegador para mensajes de commit basados en el estándar [Conventional Commits](https://www.conventionalcommits.org).
+[![Netlify Status](https://api.netlify.com/api/v1/badges/fbcfd825-a894-4461-95c3-5909e0467f33/deploy-status)](https://app.netlify.com/projects/commitlint/deploys)
+
+Editor y validador previo (_pre-linter_) interactivo en el navegador para mensajes de commit basados en el estándar [Conventional Commits](https://www.conventionalcommits.org).
 
 Empaquetado con **Vite** y administrado con **pnpm**. **100% privado y autónomo: no realiza ninguna llamada externa** a CDNs, Google Fonts ni servicios de analíticas. Todo (fuentes, estilos e íconos) se sirve de forma local y optimizada.
 
@@ -8,27 +10,30 @@ Empaquetado con **Vite** y administrado con **pnpm**. **100% privado y autónomo
 
 ## 🛠️ Tecnologías
 
-* **Vite**: Bundler ultrarrápido para desarrollo y compilación en producción.
-* **pnpm**: Gestor de paquetes rápido y eficiente en espacio de disco.
-* **Fuentes Autoalojadas**: `@fontsource/plus-jakarta-sans` y `@fontsource/jetbrains-mono` integradas localmente (sin peticiones a Google Fonts).
-* **Bootstrap 5 & Bootstrap Icons**: Dependencias empaquetadas localmente (sin CDNs externas).
-* **JavaScript Vanilla (ES6+)**: Lógica de validación con expresiones regulares y observadores DOM.
+- **Vite**: Bundler ultrarrápido para desarrollo y compilación en producción.
+- **pnpm**: Gestor de paquetes rápido y eficiente en espacio de disco.
+- **Fuentes Autoalojadas**: `@fontsource/plus-jakarta-sans` y `@fontsource/jetbrains-mono` integradas localmente (sin peticiones a Google Fonts).
+- **Bootstrap 5 & Bootstrap Icons**: Dependencias empaquetadas localmente (sin CDNs externas).
+- **JavaScript Vanilla (ES6+)**: Lógica de validación con expresiones regulares y observadores DOM.
 
 ---
 
 ## 💻 Desarrollo Local con pnpm y Vite
 
 1. **Instalar dependencias:**
+
    ```bash
    pnpm install
    ```
 
 2. **Iniciar servidor de desarrollo:**
+
    ```bash
    pnpm dev
    ```
 
 3. **Compilar para producción:**
+
    ```bash
    pnpm build
    ```
@@ -43,6 +48,7 @@ Empaquetado con **Vite** y administrado con **pnpm**. **100% privado y autónomo
 ## 🚀 Despliegue en Netlify
 
 El proyecto está configurado en [`netlify.toml`](./netlify.toml) para compilar y desplegar automáticamente:
+
 - **Build command**: `pnpm run build`
 - **Publish directory**: `dist`
 
@@ -50,10 +56,10 @@ El proyecto está configurado en [`netlify.toml`](./netlify.toml) para compilar 
 
 ## ⌨️ Atajos de Teclado
 
-| Acción | Windows / Linux | macOS |
-| :--- | :--- | :--- |
-| **Copiar mensaje generado** | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> *o* <kbd>Alt</kbd> + <kbd>C</kbd> | <kbd>⌘</kbd> + <kbd>Enter</kbd> *o* <kbd>⌥</kbd> + <kbd>C</kbd> |
-| **Copiar comando `git commit -m`** | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> | <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> |
+| Acción                             | Windows / Linux                                                      | macOS                                                           |
+| :--------------------------------- | :------------------------------------------------------------------- | :-------------------------------------------------------------- |
+| **Copiar mensaje generado**        | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> _o_ <kbd>Alt</kbd> + <kbd>C</kbd> | <kbd>⌘</kbd> + <kbd>Enter</kbd> _o_ <kbd>⌥</kbd> + <kbd>C</kbd> |
+| **Copiar comando `git commit -m`** | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>                | <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>              |
 
 ---
 
