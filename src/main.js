@@ -14,9 +14,5 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 // Custom Application Styles
 import './style.css';
 
-// Bootstrap JS
-import * as bootstrap from 'bootstrap';
-window.bootstrap = bootstrap;
-
-// Core Application Logic
+// Core Application Logic (includes Bootstrap JS)
 import './script.js';

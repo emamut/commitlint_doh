@@ -2,6 +2,11 @@
 // Commitlint D'oh - Main Logic & Validation
 // ==========================================================================
 
+import * as bootstrap from 'bootstrap';
+if (typeof window !== 'undefined') {
+    window.bootstrap = bootstrap;
+}
+
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", main);
 } else {
