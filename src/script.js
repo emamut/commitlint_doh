@@ -195,7 +195,7 @@ function main() {
                 gitCmd = `git commit ${flags}`;
             }
 
-            copyStringToClipboard(gitCmd, copyGitCmd, '<i class="bi bi-terminal me-1"></i> Copy git command', '<i class="bi bi-check2-circle me-1"></i> Command Copied!');
+            copyGitCommand(gitCmd);
         });
     }
 
@@ -358,7 +358,51 @@ function main() {
 
     } // end function update_commit_message
 
-    function copyStringToClipboard(str, buttonEl, defaultHtml, successHtml) {
+    // Platform & Keyboard Shortcuts Configuration
+    const isMac = typeof navigator !== "undefined" && (/Mac|iPod|iPhone|iPad/.test(navigator.platform || "") || /Macintosh|Mac OS X/.test(navigator.userAgent || ""));
+    const shortcutLabel = isMac ? "⌘↵" : "Ctrl+↵";
+    const gitShortcutLabel = isMac ? "⌘⇧↵" : "Ctrl+⇧+↵";
+
+    function updateShortcutBadges() {
+        const copyBadge = document.getElementById("copy_shortcut_kbd");
+        if (copyBadge) copyBadge.textContent = shortcutLabel;
+
+        const gitBadge = document.getElementById("git_shortcut_kbd");
+        if (gitBadge) gitBadge.textContent = gitShortcutLabel;
+
+        document.querySelectorAll(".shortcut-primary").forEach(el => el.textContent = shortcutLabel);
+        document.querySelectorAll(".shortcut-git").forEach(el => el.textContent = gitShortcutLabel);
+        document.querySelectorAll(".shortcut-alt").forEach(el => el.textContent = isMac ? "⌥C" : "Alt+C");
+    }
+
+    function showToast(message, type = "success") {
+        const toastEl = document.getElementById("copy_toast");
+        const toastBody = document.getElementById("copy_toast_body");
+        if (!toastEl || typeof bootstrap === "undefined" || !bootstrap.Toast) return;
+
+        if (toastBody) {
+            const iconClass = type === "success" ? "bi-check2-circle text-success" : "bi-exclamation-triangle text-warning";
+            toastBody.innerHTML = `<i class="bi ${iconClass} fs-5"></i> <span>${message}</span>`;
+        }
+
+        const toastInstance = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 2200 });
+        toastInstance.show();
+    }
+
+    function triggerIncompleteFeedback() {
+        const copyBtnEl = document.getElementById("copy_to_clipboard");
+        const warningBox = document.getElementById("commit_message_container");
+        const target = (copyBtnEl && (copyBtnEl.disabled || copyBtnEl.hasAttribute("disabled"))) ? copyBtnEl : warningBox;
+        if (target) {
+            target.classList.remove("shake-element");
+            void target.offsetWidth; // Force reflow
+            target.classList.add("shake-element");
+            setTimeout(() => target.classList.remove("shake-element"), 400);
+        }
+        showToast("Completa los campos requeridos antes de copiar", "warning");
+    }
+
+    function copyStringToClipboard(str, buttonEl, defaultHtml, successHtml, toastMsg) {
         function showFeedback() {
             if (buttonEl) {
                 buttonEl.innerHTML = successHtml;
@@ -367,6 +411,9 @@ function main() {
                     buttonEl.innerHTML = defaultHtml;
                     buttonEl.classList.remove("btn-success");
                 }, 2000);
+            }
+            if (toastMsg) {
+                showToast(toastMsg, "success");
             }
         }
 
@@ -383,12 +430,70 @@ function main() {
         let copyText = document.getElementById(div_id);
         let copyBtn = document.getElementById("copy_to_clipboard");
         let copyText_with_newlines = copyText ? br2nl(copyText.innerText) : "";
+        const defaultHtml = `<i class="bi bi-clipboard"></i> <span>Copiar Mensaje</span> <kbd class="badge bg-white text-dark bg-opacity-25 ms-1 small kbd-shortcut" id="copy_shortcut_kbd">${shortcutLabel}</kbd>`;
+        const successHtml = `<i class="bi bi-check2-circle"></i> <span>¡Copiado!</span>`;
+
         copyStringToClipboard(
             copyText_with_newlines,
             copyBtn,
-            '<i class="bi bi-clipboard me-1"></i> Copy to Clipboard',
-            '<i class="bi bi-check2-circle me-1"></i> Copied to Clipboard!'
+            defaultHtml,
+            successHtml,
+            "Mensaje de commit copiado al portapapeles"
         );
+    }
+
+    function copyGitCommand(gitCmd) {
+        let copyGitBtn = document.getElementById("copy_git_cmd");
+        const defaultGitHtml = `<i class="bi bi-terminal"></i> <span>git commit -m</span> <kbd class="badge bg-white text-white bg-opacity-25 ms-1 small kbd-shortcut" id="git_shortcut_kbd">${gitShortcutLabel}</kbd>`;
+        const successGitHtml = `<i class="bi bi-check2-circle"></i> <span>¡Comando Copiado!</span>`;
+
+        copyStringToClipboard(
+            gitCmd,
+            copyGitBtn,
+            defaultGitHtml,
+            successGitHtml,
+            "Comando git commit copiado al portapapeles"
+        );
+    }
+
+    function initKeyboardShortcuts() {
+        updateShortcutBadges();
+
+        document.addEventListener("keydown", function(e) {
+            const isCmdOrCtrl = e.metaKey || e.ctrlKey;
+            const isEnter = e.key === "Enter" || e.keyCode === 13;
+            const isAltC = e.altKey && (e.key === "c" || e.key === "C" || e.keyCode === 67);
+
+            if (isCmdOrCtrl && isEnter) {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    // Ctrl/Cmd + Shift + Enter -> Copy git command
+                    const copyGitBtn = document.getElementById("copy_git_cmd");
+                    if (copyGitBtn && !copyGitBtn.disabled && !copyGitBtn.hasAttribute("disabled")) {
+                        copyGitBtn.click();
+                    } else {
+                        triggerIncompleteFeedback();
+                    }
+                } else {
+                    // Ctrl/Cmd + Enter -> Copy commit message
+                    const copyBtnEl = document.getElementById("copy_to_clipboard");
+                    if (copyBtnEl && !copyBtnEl.disabled && !copyBtnEl.hasAttribute("disabled")) {
+                        copyBtnEl.click();
+                    } else {
+                        triggerIncompleteFeedback();
+                    }
+                }
+            } else if (isAltC && !e.ctrlKey && !e.metaKey) {
+                // Alt + C -> Copy commit message
+                e.preventDefault();
+                const copyBtnEl = document.getElementById("copy_to_clipboard");
+                if (copyBtnEl && !copyBtnEl.disabled && !copyBtnEl.hasAttribute("disabled")) {
+                    copyBtnEl.click();
+                } else {
+                    triggerIncompleteFeedback();
+                }
+            }
+        });
     }
 
     function fallbackCopy(text, callback) {
@@ -539,6 +644,7 @@ function main() {
     }
 
     initThemeToggle();
+    initKeyboardShortcuts();
 
     add_current_version_zip_file_link_to_button(get_version());
 

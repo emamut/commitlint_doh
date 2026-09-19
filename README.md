@@ -61,6 +61,15 @@ open index.html
 
 ---
 
+## ⌨️ Atajos de Teclado
+
+| Acción | Windows / Linux | macOS |
+| :--- | :--- | :--- |
+| **Copiar mensaje generado** | <kbd>Ctrl</kbd> + <kbd>Enter</kbd> *o* <kbd>Alt</kbd> + <kbd>C</kbd> | <kbd>⌘</kbd> + <kbd>Enter</kbd> *o* <kbd>⌥</kbd> + <kbd>C</kbd> |
+| **Copiar comando `git commit -m`** | <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> | <kbd>⌘</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd> |
+
+---
+
 ## 📁 Estructura del Proyecto
 
 ```text

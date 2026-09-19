@@ -279,13 +279,15 @@
             </div>
 
             <div class="p-3 bg-dark border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2">
-              <button id="copy_to_clipboard" type="button" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2" disabled="disabled">
+              <button id="copy_to_clipboard" type="button" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2" disabled="disabled" accesskey="c" title="Copiar mensaje generado (Ctrl+Enter o Alt+C)">
                 <i class="bi bi-clipboard"></i>
                 <span>Copiar Mensaje</span>
+                <kbd class="badge bg-white text-dark bg-opacity-25 ms-1 small kbd-shortcut" id="copy_shortcut_kbd">Ctrl+↵</kbd>
               </button>
-              <button id="copy_git_cmd" type="button" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2" disabled="disabled">
+              <button id="copy_git_cmd" type="button" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2" disabled="disabled" title="Copiar como comando git commit (Ctrl+Shift+Enter)">
                 <i class="bi bi-terminal"></i>
                 <span>git commit -m</span>
+                <kbd class="badge bg-white text-white bg-opacity-25 ms-1 small kbd-shortcut" id="git_shortcut_kbd">Ctrl+⇧+↵</kbd>
               </button>
             </div>
           </div>
@@ -312,6 +314,28 @@
               <span class="text-secondary">[cuerpo opcional]</span>
               <br><br>
               <span class="text-secondary">[footer(s) opcional(es)]</span>
+            </div>
+          </div>
+
+          <!-- Keyboard Shortcuts Card -->
+          <div class="card main-card border p-3">
+            <h3 class="h6 fw-bold mb-2 text-body d-flex align-items-center gap-2">
+              <i class="bi bi-keyboard text-primary"></i>
+              <span>Atajos de Teclado</span>
+            </h3>
+            <div class="small d-flex flex-column gap-2 text-body-secondary">
+              <div class="d-flex justify-content-between align-items-center">
+                <span>Copiar mensaje</span>
+                <span class="d-flex align-items-center gap-1">
+                  <kbd class="kbd-shortcut shortcut-primary">Ctrl+↵</kbd>
+                  <span class="text-muted small">o</span>
+                  <kbd class="kbd-shortcut shortcut-alt">Alt+C</kbd>
+                </span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center">
+                <span>Copiar comando git</span>
+                <kbd class="kbd-shortcut shortcut-git">Ctrl+Shift+↵</kbd>
+              </div>
             </div>
           </div>
 
@@ -527,6 +551,19 @@
       </div>
     </div>
   </footer>
+
+  <!-- Toast Notification for Copy Actions -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090;">
+    <div id="copy_toast" class="toast align-items-center text-bg-dark border border-secondary shadow" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2" id="copy_toast_body">
+          <i class="bi bi-check2-circle text-success fs-5"></i>
+          <span>Mensaje copiado al portapapeles</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
