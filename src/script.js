@@ -204,6 +204,189 @@ function main() {
         });
     }
 
+    // Storage configuration for persisting the latest registered data
+    const STORAGE_KEY = "commitlint_last_data";
+    const STORAGE_KEY_FALLBACK = "commitlint_form_data";
+    const HISTORY_KEY = "commitlint_history";
+    let isRestoring = false;
+
+    function saveFormData(compiledMessage = "") {
+        try {
+            const elType = document.getElementById("commit_type");
+            const elScope = document.getElementById("commit_scope");
+            const elExcl = document.getElementById("commit_exclamation");
+            const elSubj = document.getElementById("commit_subject");
+            const elBody = document.getElementById("commit_body");
+            const elFoot = document.getElementById("commit_footer");
+
+            const type = elType ? elType.value : "";
+            const scope = elScope ? elScope.value : "";
+            const exclamation = elExcl ? elExcl.value : "";
+            const subject = elSubj ? elSubj.value : "";
+            const body = elBody ? elBody.value : "";
+            const footer = elFoot ? elFoot.value : "";
+
+            const footers = {
+                footer_breaking_changes: Boolean(document.getElementById("footer_breaking_changes")?.checked),
+                footer_fixes: Boolean(document.getElementById("footer_fixes")?.checked),
+                footer_closes: Boolean(document.getElementById("footer_closes")?.checked),
+                footer_deprecated: Boolean(document.getElementById("footer_deprecated")?.checked),
+                footer_reviewed: Boolean(document.getElementById("footer_reviewed")?.checked),
+            };
+
+            const isEmpty = !type && !scope && !exclamation && !subject && !body && !footer && !Object.values(footers).some(Boolean);
+
+            if (isEmpty) {
+                localStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STORAGE_KEY_FALLBACK);
+            } else {
+                const data = {
+                    commit_type: type,
+                    commit_scope: scope,
+                    commit_exclamation: exclamation,
+                    commit_subject: subject,
+                    commit_body: body,
+                    commit_footer: footer,
+                    footers: footers,
+                    message: compiledMessage || "",
+                    timestamp: Date.now()
+                };
+                const serialized = JSON.stringify(data);
+                localStorage.setItem(STORAGE_KEY, serialized);
+                localStorage.setItem(STORAGE_KEY_FALLBACK, serialized);
+            }
+        } catch (e) {
+            console.warn("No se pudo guardar los datos en localStorage: ", e);
+        }
+    }
+
+    function loadFormData() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_FALLBACK);
+            if (!raw) return false;
+
+            const data = JSON.parse(raw);
+            if (!data || typeof data !== "object") return false;
+
+            const elType = document.getElementById("commit_type");
+            const elScope = document.getElementById("commit_scope");
+            const elExcl = document.getElementById("commit_exclamation");
+            const elSubj = document.getElementById("commit_subject");
+            const elBody = document.getElementById("commit_body");
+            const elFoot = document.getElementById("commit_footer");
+
+            if (elType && data.commit_type !== undefined) elType.value = data.commit_type;
+            if (elScope && data.commit_scope !== undefined) elScope.value = data.commit_scope;
+            if (elExcl && data.commit_exclamation !== undefined) elExcl.value = data.commit_exclamation;
+            if (elSubj && data.commit_subject !== undefined) elSubj.value = data.commit_subject;
+            if (elBody && data.commit_body !== undefined) elBody.value = data.commit_body;
+            if (elFoot && data.commit_footer !== undefined) elFoot.value = data.commit_footer;
+
+            if (data.footers && typeof data.footers === "object") {
+                let anyChecked = false;
+                for (const [id, checked] of Object.entries(data.footers)) {
+                    const cb = document.getElementById(id);
+                    if (cb) {
+                        cb.checked = Boolean(checked);
+                        if (checked) anyChecked = true;
+                    }
+                }
+                if (anyChecked) {
+                    const collapseEl = document.getElementById("collapseOne");
+                    const collapseBtn = document.querySelector('button[data-bs-target="#collapseOne"]');
+                    if (collapseEl) collapseEl.classList.add("show");
+                    if (collapseBtn) {
+                        collapseBtn.classList.remove("collapsed");
+                        collapseBtn.setAttribute("aria-expanded", "true");
+                    }
+                }
+            }
+            return true;
+        } catch (e) {
+            console.warn("No se pudo cargar los datos desde localStorage: ", e);
+            return false;
+        }
+    }
+
+    function clearSavedFormData() {
+        try {
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem(STORAGE_KEY_FALLBACK);
+        } catch (e) {
+            console.warn("No se pudo limpiar los datos en localStorage: ", e);
+        }
+    }
+
+    function recordCommitHistory() {
+        try {
+            const commitEl = document.getElementById("commit_message");
+            const commitMsg = commitEl ? br2nl(commitEl.innerText).trim() : "";
+            if (!commitMsg || commitMsg.startsWith("feat(auth): add google sso login") || commitMsg.startsWith("your commit message will appear here")) {
+                return;
+            }
+
+            const elType = document.getElementById("commit_type");
+            const elScope = document.getElementById("commit_scope");
+            const elExcl = document.getElementById("commit_exclamation");
+            const elSubj = document.getElementById("commit_subject");
+            const elBody = document.getElementById("commit_body");
+            const elFoot = document.getElementById("commit_footer");
+
+            const entry = {
+                type: elType ? elType.value : "",
+                scope: elScope ? elScope.value : "",
+                exclamation: elExcl ? elExcl.value : "",
+                subject: elSubj ? elSubj.value : "",
+                body: elBody ? elBody.value : "",
+                footer: elFoot ? elFoot.value : "",
+                message: commitMsg,
+                timestamp: Date.now()
+            };
+
+            const raw = localStorage.getItem(HISTORY_KEY);
+            let history = [];
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) history = parsed;
+                } catch {
+                    history = [];
+                }
+            }
+
+            if (history.length > 0 && history[0].message === entry.message) {
+                history[0].timestamp = entry.timestamp;
+            } else {
+                history.unshift(entry);
+                if (history.length > 20) {
+                    history = history.slice(0, 20);
+                }
+            }
+
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        } catch (e) {
+            console.warn("No se pudo guardar en el historial: ", e);
+        }
+    }
+
+    if (typeof window !== "undefined") {
+        window.commitlintStorage = {
+            getLastData: () => {
+                try {
+                    return JSON.parse(localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_FALLBACK));
+                } catch { return null; }
+            },
+            getHistory: () => {
+                try {
+                    return JSON.parse(localStorage.getItem(HISTORY_KEY));
+                } catch { return []; }
+            },
+            clear: () => {
+                clearSavedFormData();
+            }
+        };
+    }
+
     // Clear form button listener
     const btnClear = document.getElementById("btn_clear_form");
     if (btnClear) {
@@ -226,6 +409,15 @@ function main() {
                 if (cb) cb.checked = false;
             });
 
+            const collapseEl = document.getElementById("collapseOne");
+            const collapseBtn = document.querySelector('button[data-bs-target="#collapseOne"]');
+            if (collapseEl) collapseEl.classList.remove("show");
+            if (collapseBtn) {
+                collapseBtn.classList.add("collapsed");
+                collapseBtn.setAttribute("aria-expanded", "false");
+            }
+
+            clearSavedFormData();
             update_commit_message();
         });
     }
@@ -361,6 +553,13 @@ function main() {
             }
         }
 
+        // Validate immediately to update status badges & buttons synchronously
+        cl.conventional(message_to_be_linted);
+
+        if (!isRestoring) {
+            saveFormData(message_to_be_linted);
+        }
+
     } // end function update_commit_message
 
     // Platform & Keyboard Shortcuts Configuration
@@ -420,6 +619,7 @@ function main() {
             if (toastMsg) {
                 showToast(toastMsg, "success");
             }
+            recordCommitHistory();
         }
 
         if (navigator.clipboard && window.isSecureContext) {
@@ -653,7 +853,12 @@ function main() {
 
     add_current_version_zip_file_link_to_button(get_version());
 
-    // Trigger initial run to set placeholder state
+    // Restore last registered data from localStorage
+    isRestoring = true;
+    loadFormData();
+    isRestoring = false;
+
+    // Trigger initial run to set placeholder state or validate restored data
     update_commit_message();
 
 } // end function main()
