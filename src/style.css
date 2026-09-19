@@ -1,0 +1,355 @@
+/* ==========================================================================
+   Commitlint D'oh - Modern UI Styles (Light & Dark Themes)
+   ========================================================================== */
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --border-focus: #3b82f6;
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --terminal-bg: #0f172a;
+  --terminal-header: #1e293b;
+  --terminal-border: #334155;
+  --terminal-text: #f1f5f9;
+}
+
+[data-bs-theme="dark"] {
+  --bg-main: #0b0f19;
+  --bg-card: #111827;
+  --border-color: #1f2937;
+  --border-focus: #60a5fa;
+  --text-primary: #f9fafb;
+  --text-muted: #9ca3af;
+  --terminal-bg: #030712;
+  --terminal-header: #111827;
+  --terminal-border: #1f2937;
+  --terminal-text: #f3f4f6;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+.navbar-custom {
+  background-color: #0f172a;
+  border-bottom: 1px solid #1e293b;
+  padding: 0.75rem 1rem;
+}
+
+[data-bs-theme="dark"] .navbar-custom {
+  background-color: #080c14;
+  border-bottom-color: #1f2937;
+}
+
+.brand-title {
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+#theme_toggle_btn {
+  border-color: rgba(255, 255, 255, 0.25);
+  transition: all 0.2s ease;
+}
+
+#theme_toggle_btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* --------------------------------------------------------------------------
+   Cards & Layout
+   -------------------------------------------------------------------------- */
+.main-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-bs-theme="dark"] .main-card {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.25);
+}
+
+.main-card:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* --------------------------------------------------------------------------
+   Form Controls
+   -------------------------------------------------------------------------- */
+.form-label-custom {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+[data-bs-theme="dark"] .form-label-custom {
+  color: #cbd5e1;
+}
+
+.form-control-custom,
+.form-select-custom {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.95rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, color 0.2s ease;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+[data-bs-theme="dark"] .form-control-custom,
+[data-bs-theme="dark"] .form-select-custom {
+  background-color: #1f2937;
+  color: #f9fafb;
+  border-color: #374151;
+}
+
+.form-control-custom:focus,
+.form-select-custom:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+.mono-input {
+  font-family: var(--font-mono);
+}
+
+textarea.form-control-custom {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* --------------------------------------------------------------------------
+   Terminal Preview Box
+   -------------------------------------------------------------------------- */
+.sticky-preview {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 90px;
+  z-index: 10;
+}
+
+.terminal-box {
+  background-color: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.2);
+}
+
+.terminal-header {
+  background-color: var(--terminal-header);
+  border-bottom: 1px solid var(--terminal-border);
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terminal-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-dot.dot-red { background-color: #ef4444; }
+.terminal-dot.dot-yellow { background-color: #f59e0b; }
+.terminal-dot.dot-green { background-color: #10b981; }
+
+.terminal-title {
+  color: #94a3b8;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.terminal-body {
+  padding: 1.25rem;
+  min-height: 160px;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+#commit_message {
+  font-family: var(--font-mono);
+  color: var(--terminal-text);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  user-select: text;
+}
+
+/* --------------------------------------------------------------------------
+   Validation Alert Container
+   -------------------------------------------------------------------------- */
+#commit_message_container {
+  border-radius: 10px;
+  font-size: 0.88rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.25s ease;
+  white-space: pre-line;
+}
+
+#commit_message_container.alert-warning {
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+[data-bs-theme="dark"] #commit_message_container.alert-warning {
+  background-color: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #fde047;
+}
+
+#commit_message_container.alert-success {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+[data-bs-theme="dark"] #commit_message_container.alert-success {
+  background-color: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+}
+
+/* --------------------------------------------------------------------------
+   Footer Quick Options Accordion
+   -------------------------------------------------------------------------- */
+.accordion-custom .accordion-item {
+  border: 1.5px solid var(--border-color);
+  border-radius: 10px !important;
+  overflow: hidden;
+  background-color: var(--bg-card);
+}
+
+.accordion-custom .accordion-button {
+  background-color: var(--bg-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  padding: 0.75rem 1rem;
+}
+
+.accordion-custom .accordion-button:not(.collapsed) {
+  background-color: var(--bg-card);
+  color: #2563eb;
+  box-shadow: none;
+}
+
+[data-bs-theme="dark"] .accordion-custom .accordion-button:not(.collapsed) {
+  color: #60a5fa;
+}
+
+.footer-check-item {
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.footer-check-item:hover {
+  background-color: rgba(100, 116, 139, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   Guide & Info Cards
+   -------------------------------------------------------------------------- */
+.info-tab-content {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  padding: 1.5rem;
+}
+
+.nav-tabs-custom {
+  border-bottom-color: var(--border-color);
+}
+
+.nav-tabs-custom .nav-link {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+  border-radius: 10px 10px 0 0;
+  padding: 0.65rem 1.15rem;
+  transition: all 0.15s ease;
+}
+
+.nav-tabs-custom .nav-link.active {
+  color: #2563eb;
+  background-color: var(--bg-card);
+  border-color: var(--border-color) var(--border-color) var(--bg-card);
+}
+
+[data-bs-theme="dark"] .nav-tabs-custom .nav-link.active {
+  color: #60a5fa;
+}
+
+.type-pill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.8rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  padding: 1.5rem 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
