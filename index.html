@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>commitlint_d'oh! — Editor y Pre-linter de Commits Convencionales</title>
+  <meta name="description" content="Editor y pre-linter interactivo de mensajes de commit basados en la convención Conventional Commits. Con soporte offline, modo oscuro y listo para producción.">
+  <!-- Favicons matching brand title icon -->
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="alternate icon" type="image/png" href="assets/icons/favicon.png">
+  <link rel="alternate icon" type="image/x-icon" href="assets/icons/favicon.ico">
+  <link rel="apple-touch-icon" href="assets/icons/favicon.png">
+  
+  <!-- Prevent FOUC (Flash of Unstyled Content) by setting theme immediately -->
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('commitlint_theme');
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const theme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-bs-theme', theme);
+    })();
+  </script>
+
+  <!-- Google Fonts & Bootstrap 5 & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+    <div class="container-xl">
+      <a class="navbar-brand brand-title" href="#">
+        <span class="brand-icon"><i class="bi bi-git"></i></span>
+        <span>COMMITLINT_D'oh!</span>
+      </a>
+      
+      <span class="badge bg-secondary bg-opacity-75 ms-2 d-none d-sm-inline">
+        lint commit messages
+      </span>
+
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-2 mt-2 mt-lg-0">
+          <li class="nav-item">
+            <span class="d-flex align-items-center gap-1">
+              <span class="text-secondary small me-1">Engine:</span>
+              <span id="js_version" class="badge bg-danger">HALTED</span>
+            </span>
+          </li>
+          
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-light" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-book me-1"></i> Conventional Commits
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+              <li><a class="dropdown-item" href="https://www.conventionalcommits.org" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-2 text-muted"></i>conventionalcommits.org</a></li>
+              <li><a class="dropdown-item" href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right me-2 text-muted"></i>A note about commit messages</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><h6 class="dropdown-header">CLI & Ecosistema</h6></li>
+              <li><a class="dropdown-item" href="https://commitlint.js.org/#/" target="_blank" rel="noopener"><i class="bi bi-filetype-js me-2 text-warning"></i>commitlint.js (JS/TS)</a></li>
+              <li><a class="dropdown-item" href="https://github.com/commitizen/cz-cli" target="_blank" rel="noopener"><i class="bi bi-terminal me-2 text-primary"></i>commitizen (CLI)</a></li>
+              <li><a class="dropdown-item" href="https://github.com/opensource-nepal/commitlint" target="_blank" rel="noopener"><i class="bi bi-filetype-py me-2 text-info"></i>commitlint (Python)</a></li>
+              <li><a class="dropdown-item" href="https://docs.rs/git-conventional/latest/git_conventional/" target="_blank" rel="noopener"><i class="bi bi-gear me-2 text-danger"></i>git-conventional (Rust)</a></li>
+              <li><a class="dropdown-item" href="https://pkg.go.dev/github.com/conventionalcommit/commitlint" target="_blank" rel="noopener"><i class="bi bi-box me-2 text-primary"></i>commitlint (Go)</a></li>
+            </ul>
+          </li>
+
+          <!-- Dark Mode Toggle Button -->
+          <li class="nav-item">
+            <button id="theme_toggle_btn" type="button" class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" title="Cambiar tema (claro / oscuro)" aria-label="Cambiar tema">
+              <i id="theme_toggle_icon" class="bi bi-moon-stars-fill"></i>
+              <span id="theme_toggle_text" class="d-lg-none ms-1">Modo Oscuro</span>
+            </button>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-outline-light btn-sm d-flex align-items-center gap-1" href="https://github.com/VividVenturesLLC/commitlint_doh" target="_blank" rel="noopener">
+              <i class="bi bi-github"></i>
+              <span>GitHub</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container-xl my-4 my-lg-5 flex-grow-1">
+    
+    <!-- Hero / Intro -->
+    <div class="row mb-4">
+      <div class="col-12 text-center text-md-start">
+        <h1 class="h3 fw-bold text-body mb-1">Editor & Validador de Commits Convencionales</h1>
+        <p class="text-muted mb-0">Escribe commits claros, estandarizados y sin esfuerzo con validación sintáctica en tiempo real.</p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      
+      <!-- LEFT COLUMN: Form Builder -->
+      <div class="col-12 col-lg-7">
+        <div class="main-card p-4">
+          <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+            <h2 class="h5 fw-bold mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-sliders2 text-primary"></i>
+              <span>Construir Mensaje</span>
+            </h2>
+            <button id="btn_clear_form" type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              <span>Limpiar</span>
+            </button>
+          </div>
+
+          <div class="linterContainer d-flex flex-column gap-3">
+            
+            <!-- Row 1: Type, Scope & Breaking Exclamation -->
+            <div class="row g-2">
+              
+              <!-- Commit Type -->
+              <div class="col-12 col-md-5">
+                <label for="commit_type" class="form-label-custom">
+                  <span>Tipo <span class="text-danger">*</span></span>
+                  <span class="badge bg-body-secondary text-body-secondary border">Obligatorio</span>
+                </label>
+                <select id="commit_type" class="form-select form-select-custom" title="El tipo de cambio realizado" data-bs-toggle="tooltip">
+                  <option value="" selected>&lt;tipo&gt; Seleccionar tipo...</option>
+                  <option value="feat">feat (nueva característica)</option>
+                  <option value="fix">fix (corrección de error)</option>
+                  <option value="docs">docs (documentación)</option>
+                  <option value="style">style (formato, espacios, comas)</option>
+                  <option value="refactor">refactor (ni corrige bug ni añade feature)</option>
+                  <option value="perf">perf (mejora de rendimiento)</option>
+                  <option value="test">test (añadir o corregir pruebas)</option>
+                  <option value="build">build (sistema de build o dependencias)</option>
+                  <option value="ci">ci (configuración de CI y scripts)</option>
+                  <option value="chore">chore (mantenimiento y tareas rutinarias)</option>
+                  <option value="revert">revert (revertir un commit previo)</option>
+                </select>
+              </div>
+
+              <!-- Scope -->
+              <div class="col-8 col-md-4">
+                <label for="commit_scope" class="form-label-custom">
+                  <span>Ámbito / Scope</span>
+                  <span class="badge bg-body-secondary text-body-secondary border">Opcional</span>
+                </label>
+                <input id="commit_scope" type="text" class="form-control form-control-custom mono-input" placeholder="ej: auth, api, ui" title="Indica la sección o módulo del cambio (sin espacios)" data-bs-toggle="tooltip">
+              </div>
+
+              <!-- Exclamation / Breaking Change -->
+              <div class="col-4 col-md-3">
+                <label for="commit_exclamation" class="form-label-custom">
+                  <span>Breaking?</span>
+                  <span class="badge bg-body-secondary text-body-secondary border">!</span>
+                </label>
+                <select id="commit_exclamation" class="form-select form-select-custom" title="Indica cambio que rompe compatibilidad hacia atrás" data-bs-toggle="tooltip">
+                  <option value="" selected>No</option>
+                  <option value="!">! (Sí)</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Row 2: Subject Description -->
+            <div>
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <label for="commit_subject" class="form-label-custom mb-0">
+                  <span>Descripción Corta (Subject) <span class="text-danger">*</span></span>
+                </label>
+                <span id="first_line_counter" class="badge bg-secondary">0 / 50</span>
+              </div>
+              <input id="commit_subject" type="text" class="form-control form-control-custom mono-input" placeholder="ej: add authentication middleware for api routes" title="Usa modo imperativo presente: 'add' no 'added'. En minúsculas y sin punto al final." data-bs-toggle="tooltip">
+              <div class="form-text small text-muted">
+                <i class="bi bi-info-circle me-1"></i> Modo imperativo ("add" en vez de "added"), sin mayúscula inicial y sin punto final.
+              </div>
+            </div>
+
+            <!-- Row 3: Body -->
+            <div>
+              <label for="commit_body" class="form-label-custom">
+                <span>Cuerpo del Mensaje (Body)</span>
+                <span class="badge bg-body-secondary text-body-secondary border">Opcional</span>
+              </label>
+              <textarea id="commit_body" class="form-control form-control-custom mono-input" rows="4" placeholder="Describe la motivación del cambio y el contraste con el comportamiento anterior..." title="Líneas envueltas automáticamente a 72 caracteres con soporte de viñetas" data-bs-toggle="tooltip"></textarea>
+            </div>
+
+            <!-- Row 4: Footers Section -->
+            <div>
+              <div class="accordion accordion-custom mb-2" id="accordionFooter">
+                <div class="accordion-item">
+                  <h3 class="accordion-header" id="headingFooter">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                      <i class="bi bi-check2-square me-2 text-primary"></i>
+                      <span>Etiquetas Rápidas de Footer (Issues & Breaking Changes)</span>
+                    </button>
+                  </h3>
+                  <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingFooter" data-bs-parent="#accordionFooter">
+                    <div class="accordion-body bg-body-tertiary">
+                      <div class="row g-2">
+                        <div class="col-sm-6">
+                          <div class="form-check footer-check-item">
+                            <input class="form-check-input" type="checkbox" value="" id="footer_breaking_changes">
+                            <label class="form-check-label fw-semibold" for="footer_breaking_changes">BREAKING CHANGE:</label>
+                            <small class="text-muted d-block ms-1">Indica ruptura de compatibilidad</small>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-check footer-check-item">
+                            <input class="form-check-input" type="checkbox" value="" id="footer_fixes">
+                            <label class="form-check-label fw-semibold" for="footer_fixes">Fixes: #</label>
+                            <small class="text-muted d-block ms-1">Referencia a issue corregida</small>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-check footer-check-item">
+                            <input class="form-check-input" type="checkbox" value="" id="footer_closes">
+                            <label class="form-check-label fw-semibold" for="footer_closes">Closes: #</label>
+                            <small class="text-muted d-block ms-1">Cierra issue al fusionar</small>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-check footer-check-item">
+                            <input class="form-check-input" type="checkbox" value="" id="footer_deprecated">
+                            <label class="form-check-label fw-semibold" for="footer_deprecated">Deprecated:</label>
+                            <small class="text-muted d-block ms-1">Funcionalidad obsoleta</small>
+                          </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="form-check footer-check-item">
+                            <input class="form-check-input" type="checkbox" value="" id="footer_reviewed">
+                            <label class="form-check-label fw-semibold" for="footer_reviewed">Reviewed-by:</label>
+                            <small class="text-muted d-block ms-1">Aprobador del cambio</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Footer Textarea -->
+              <textarea id="commit_footer" class="form-control form-control-custom mono-input" rows="2" placeholder="Información de footer (ej: BREAKING CHANGE: se eliminó el endpoint v1, Closes: #104)..." title="Referencias a issues o detalles de cambios disruptivos" data-bs-toggle="tooltip"></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky Real-time Preview & Validation -->
+      <div class="col-12 col-lg-5">
+        <div class="sticky-preview d-flex flex-column gap-3">
+          
+          <!-- Terminal Window Preview -->
+          <div class="terminal-box">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="terminal-dot dot-red"></span>
+                <span class="terminal-dot dot-yellow"></span>
+                <span class="terminal-dot dot-green"></span>
+              </div>
+              <span class="terminal-title">commit-message.txt</span>
+              <span id="lint_status_badge" class="badge bg-secondary">
+                <i class="bi bi-clock me-1"></i> Esperando...
+              </span>
+            </div>
+
+            <div class="terminal-body">
+              <pre id="commit_message" class="mb-0">your commit message will appear here</pre>
+              <!-- Hidden helper div for MutationObserver -->
+              <div id="wip_message_to_be_linted" hidden>message to be linted</div>
+            </div>
+
+            <div class="p-3 bg-dark border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2">
+              <button id="copy_to_clipboard" type="button" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center gap-2" disabled="disabled">
+                <i class="bi bi-clipboard"></i>
+                <span>Copiar Mensaje</span>
+              </button>
+              <button id="copy_git_cmd" type="button" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2" disabled="disabled">
+                <i class="bi bi-terminal"></i>
+                <span>git commit -m</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Linter Diagnostics Alert Container -->
+          <div id="commit_message_container" role="alert" aria-live="polite" aria-atomic="true" class="alert alert-warning shadow-sm">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-shield-exclamation fs-5 flex-shrink-0"></i>
+              <strong id="commit_message_warning">
+                Empty commit message
+              </strong>
+            </div>
+          </div>
+
+          <!-- Quick Tips Card -->
+          <div class="card main-card border p-3">
+            <h3 class="h6 fw-bold mb-2 text-body d-flex align-items-center gap-2">
+              <i class="bi bi-lightbulb text-warning"></i>
+              <span>Estructura Rápida</span>
+            </h3>
+            <div class="p-2 rounded-2 font-monospace small text-body-secondary border bg-body-tertiary">
+              <span class="text-primary fw-bold">&lt;tipo&gt;</span><span class="text-info">(&lt;ámbito&gt;)</span><span class="text-danger fw-bold">[!]</span>: <span class="text-body">&lt;descripción&gt;</span>
+              <br><br>
+              <span class="text-secondary">[cuerpo opcional]</span>
+              <br><br>
+              <span class="text-secondary">[footer(s) opcional(es)]</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Documentation & Information Tabs Section -->
+    <div class="mt-5">
+      <ul class="nav nav-tabs nav-tabs-custom" id="infoTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active d-flex align-items-center gap-2" id="types-tab" data-bs-toggle="tab" data-bs-target="#tab-types" type="button" role="tab">
+            <i class="bi bi-tags"></i>
+            <span>Tipos de Commit</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center gap-2" id="faq-tab" data-bs-toggle="tab" data-bs-target="#tab-faq" type="button" role="tab">
+            <i class="bi bi-question-circle"></i>
+            <span>Reglas & FAQ</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center gap-2" id="about-tab" data-bs-toggle="tab" data-bs-target="#tab-about" type="button" role="tab">
+            <i class="bi bi-info-circle"></i>
+            <span>Acerca de & Descarga</span>
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link d-flex align-items-center gap-2" id="links-tab" data-bs-toggle="tab" data-bs-target="#tab-links" type="button" role="tab">
+            <i class="bi bi-link-45deg"></i>
+            <span>Recursos</span>
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content info-tab-content shadow-sm" id="infoTabsContent">
+        
+        <!-- Tab 1: Types Reference -->
+        <div class="tab-pane fade show active" id="tab-types" role="tabpanel">
+          <h4 class="h6 fw-bold mb-3 text-uppercase text-muted">Estándar Conventional Commits</h4>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width: 140px;">Tipo</th>
+                  <th>Descripción</th>
+                  <th>SemVer Impact</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="type-pill bg-success-subtle text-success border border-success-subtle">feat</span></td>
+                  <td>Nueva funcionalidad o característica para el usuario final.</td>
+                  <td><span class="badge bg-info text-dark">MINOR</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-danger-subtle text-danger border border-danger-subtle">fix</span></td>
+                  <td>Solución a un defecto o fallo detectado en la aplicación.</td>
+                  <td><span class="badge bg-secondary">PATCH</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-primary-subtle text-primary border border-primary-subtle">docs</span></td>
+                  <td>Cambios exclusivamente en documentación (README, manuales, docstrings).</td>
+                  <td><span class="badge bg-body-secondary text-body-secondary border">Ninguno</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle">refactor</span></td>
+                  <td>Reestructuración de código sin alterar comportamiento externo ni corregir bugs.</td>
+                  <td><span class="badge bg-secondary">PATCH</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-info-subtle text-info-emphasis border border-info-subtle">perf</span></td>
+                  <td>Modificación que optimiza el rendimiento o velocidad de procesamiento.</td>
+                  <td><span class="badge bg-secondary">PATCH</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-body-secondary text-body border border-secondary-subtle">test</span></td>
+                  <td>Añadir o corregir pruebas unitarias, de integración o suites de test.</td>
+                  <td><span class="badge bg-body-secondary text-body-secondary border">Ninguno</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">build</span></td>
+                  <td>Cambios en dependencias externas o herramientas de compilación/bundling (npm, gradle).</td>
+                  <td><span class="badge bg-body-secondary text-body-secondary border">Ninguno</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">ci</span></td>
+                  <td>Ajustes en integración continua (GitHub Actions, Netlify, Travis, GitLab CI).</td>
+                  <td><span class="badge bg-body-secondary text-body-secondary border">Ninguno</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">chore</span></td>
+                  <td>Tareas rutinarias de mantenimiento que no afectan el código de producción.</td>
+                  <td><span class="badge bg-body-secondary text-body-secondary border">Ninguno</span></td>
+                </tr>
+                <tr>
+                  <td><span class="type-pill bg-danger text-white">! (Breaking)</span></td>
+                  <td>Cualquier tipo con signo de exclamación <code>!</code> indica un cambio disruptivo.</td>
+                  <td><span class="badge bg-danger">MAJOR</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 2: FAQ & Rules -->
+        <div class="tab-pane fade" id="tab-faq" role="tabpanel">
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h5 class="h6 fw-bold text-primary"><i class="bi bi-rulers me-2"></i>¿Por qué la regla de los 50 caracteres?</h5>
+              <p class="text-muted small">
+                La primera línea es el resumen de la vista compacta en herramientas como <code>git log --oneline</code>, GitHub y terminales. Mantenerla en 50 caracteres garantiza que sea legible sin truncamiento.
+              </p>
+            </div>
+            <div class="col-md-6">
+              <h5 class="h6 fw-bold text-primary"><i class="bi bi-text-wrap me-2"></i>¿Por qué envolver a 72 caracteres?</h5>
+              <p class="text-muted small">
+                Git formatea las entradas con una sangría predeterminada en los comandos de consola. Un límite de 72 caracteres evita saltos de línea irregulares en terminales estándar de 80 columnas.
+              </p>
+            </div>
+            <div class="col-md-6">
+              <h5 class="h6 fw-bold text-primary"><i class="bi bi-slash-circle me-2"></i>¿Por qué evitar barras invertidas (\)?</h5>
+              <p class="text-muted small">
+                Las contrabarras (<code>\</code>) pueden interpretarse como caracteres de escape en scripts de CI/CD, shells o parsers de Markdown, provocando errores inesperados en el historial.
+              </p>
+            </div>
+            <div class="col-md-6">
+              <h5 class="h6 fw-bold text-primary"><i class="bi bi-chat-dots me-2"></i>¿Por qué tiempo imperativo presente?</h5>
+              <p class="text-muted small">
+                Sigue la propia convención de Git (por ejemplo: "Merge branch..."). Al leer el commit se completa la frase: <em>"Si se aplica este commit, este cambio va a [tu descripción]"</em>.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: About & Offline Download -->
+        <div class="tab-pane fade" id="tab-about" role="tabpanel">
+          <div class="row align-items-center g-4">
+            <div class="col-md-8">
+              <h5 class="h6 fw-bold">Privacidad y Uso Offline</h5>
+              <p class="text-muted small mb-3">
+                <strong>Commitlint_D'oh!</strong> es una herramienta open-source diseñada para escribir commits conformes con el estándar sin requerir configuraciones adicionales en tu entorno de desarrollo. Todo se ejecuta 100% en tu navegador de forma privada (sin enviar datos a ningún servidor externo).
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <a id="zip_file_button" href="#" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
+                  <i class="bi bi-download"></i>
+                  <span>Descargar archivo ZIP para uso offline</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+              <div class="p-3 bg-body-tertiary rounded border text-start">
+                <div class="fw-bold small mb-1">Beneficios:</div>
+                <ul class="list-unstyled small text-muted mb-0">
+                  <li><i class="bi bi-check2 text-success me-1"></i> Privacidad total</li>
+                  <li><i class="bi bi-check2 text-success me-1"></i> Modo Claro y Modo Oscuro</li>
+                  <li><i class="bi bi-check2 text-success me-1"></i> Sin dependencias pesadas</li>
+                  <li><i class="bi bi-check2 text-success me-1"></i> Agnóstico a lenguajes</li>
+                  <li><i class="bi bi-check2 text-success me-1"></i> Despliegue instantáneo en Netlify</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Links & Credits -->
+        <div class="tab-pane fade" id="tab-links" role="tabpanel">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="card h-100 border p-3">
+                <h6 class="fw-bold text-body mb-2"><i class="bi bi-journal-bookmark me-1 text-primary"></i> Lecturas recomendadas</h6>
+                <ul class="small text-muted mb-0 ps-3">
+                  <li><a href="https://cbea.ms/git-commit/" target="_blank" rel="noopener">How to Write a Git Commit Message</a> (Chris Beams)</li>
+                  <li><a href="https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html" target="_blank" rel="noopener">A Note About Git Commit Messages</a> (Tim Pope)</li>
+                  <li><a href="https://github.com/angular/angular/blob/main/contributing-docs/commit-message-guidelines.md" target="_blank" rel="noopener">Angular Commit Message Guidelines</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card h-100 border p-3">
+                <h6 class="fw-bold text-body mb-2"><i class="bi bi-heart me-1 text-danger"></i> Créditos y Recursos</h6>
+                <ul class="small text-muted mb-0 ps-3">
+                  <li>Expresión regular de validación por <a href="https://gist.github.com/marcojahn/482410b728c31b221b70ea6d2c433f0c" target="_blank" rel="noopener">Marco Jahn</a></li>
+                  <li>Estilos base con <a href="https://getbootstrap.com" target="_blank" rel="noopener">Bootstrap 5</a></li>
+                  <li>Repositorio original por <a href="https://github.com/VividVenturesLLC/commitlint_doh" target="_blank" rel="noopener">VividVenturesLLC</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-auto">
+    <div class="container-xl d-flex flex-column flex-sm-row align-items-center justify-content-between gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <span class="fw-bold text-body">COMMITLINT_D'oh!</span>
+        <span class="text-muted">&copy; Open Source. MIT License.</span>
+      </div>
+      <div>
+        <a href="https://github.com/VividVenturesLLC/commitlint_doh" target="_blank" rel="noopener" class="text-muted text-decoration-none me-3">
+          <i class="bi bi-github me-1"></i>Repositorio
+        </a>
+        <a href="https://www.conventionalcommits.org" target="_blank" rel="noopener" class="text-muted text-decoration-none">
+          <i class="bi bi-box-arrow-up-right me-1"></i>Especificación
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="src/script.js"></script>
+
+</body>
+</html>
