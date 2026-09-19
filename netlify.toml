@@ -1,7 +1,7 @@
 # Netlify Configuration for commitlint_doh
 [build]
-  # Root directory contains index.html, assets/, and src/
-  publish = "."
+  command = "pnpm run build"
+  publish = "dist"
 
 # Handle backwards compatibility for URLs pointing to /src/
 [[redirects]]

@@ -2,62 +2,49 @@
 
 Editor y validador previo (*pre-linter*) interactivo en el navegador para mensajes de commit basados en el estándar [Conventional Commits](https://www.conventionalcommits.org).
 
-Diseñado para funcionar sin dependencias de compilación, 100% privado en el cliente y listo para desplegarse con un clic en **Netlify** o utilizarse sin conexión.
+Empaquetado con **Vite** y administrado con **pnpm**. **100% privado y autónomo: no realiza ninguna llamada externa** a CDNs, Google Fonts ni servicios de analíticas. Todo (fuentes, estilos e íconos) se sirve de forma local y optimizada.
 
 ---
 
 ## 🛠️ Tecnologías
 
-* **HTML5 & CSS3**: Interfaz moderna, responsive y accesible basada en [Bootstrap 5](https://getbootstrap.com) y [Bootstrap Icons](https://icons.getbootstrap.com).
-* **JavaScript Vanilla (ES6+)**: Lógica de validación con expresiones regulares y observadores DOM, sin bundlers ni frameworks pesados.
-* **Despliegue Estático**: Compatible con Netlify, GitHub Pages, Vercel y Cloudflare Pages.
+* **Vite**: Bundler ultrarrápido para desarrollo y compilación en producción.
+* **pnpm**: Gestor de paquetes rápido y eficiente en espacio de disco.
+* **Fuentes Autoalojadas**: `@fontsource/plus-jakarta-sans` y `@fontsource/jetbrains-mono` integradas localmente (sin peticiones a Google Fonts).
+* **Bootstrap 5 & Bootstrap Icons**: Dependencias empaquetadas localmente (sin CDNs externas).
+* **JavaScript Vanilla (ES6+)**: Lógica de validación con expresiones regulares y observadores DOM.
+
+---
+
+## 💻 Desarrollo Local con pnpm y Vite
+
+1. **Instalar dependencias:**
+   ```bash
+   pnpm install
+   ```
+
+2. **Iniciar servidor de desarrollo:**
+   ```bash
+   pnpm dev
+   ```
+
+3. **Compilar para producción:**
+   ```bash
+   pnpm build
+   ```
+
+4. **Previsualizar la compilación de producción:**
+   ```bash
+   pnpm preview
+   ```
 
 ---
 
 ## 🚀 Despliegue en Netlify
 
-Este proyecto está preconfigurado para desplegarse en Netlify automáticamente sin pasos adicionales:
-
-1. **Vía Git (Recomendado)**:
-   - Sube este repositorio a GitHub, GitLab o Bitbucket.
-   - En tu panel de [Netlify](https://app.netlify.com), selecciona **"Add new site" > "Import an existing project"**.
-   - Netlify detectará automáticamente el archivo [`netlify.toml`](./netlify.toml) configurado en la raíz con:
-     - **Publish directory**: `.` (raíz)
-     - **Build command**: (vacío, sitio estático puro)
-   - Haz clic en **Deploy**.
-
-2. **Vía Netlify CLI**:
-   ```bash
-   npm install -g netlify-cli
-   netlify deploy --prod --dir=.
-   ```
-
-3. **Vía Drag & Drop**:
-   - Arrastra la carpeta del repositorio directamente a la sección de despliegue manual en la web de Netlify.
-
----
-
-## 💻 Ejecución Local
-
-Puedes ejecutar el proyecto en tu máquina local de varias maneras:
-
-### Opción 1: Abrir directamente en el navegador
-```bash
-# En macOS:
-open index.html
-```
-
-### Opción 2: Servidor local ligero
-* **Con Python:**
-  ```bash
-  python3 -m http.server 8000
-  ```
-  Abre [http://localhost:8000](http://localhost:8000) en tu navegador.
-
-* **Con Node.js:**
-  ```bash
-  npx serve .
-  ```
+El proyecto está configurado en [`netlify.toml`](./netlify.toml) para compilar y desplegar automáticamente:
+- **Build command**: `pnpm run build`
+- **Publish directory**: `dist`
 
 ---
 
