@@ -232,7 +232,6 @@ textarea.form-control-custom {
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   transition: all 0.25s ease;
-  white-space: pre-line;
 }
 
 #commit_message_container.alert-warning {
@@ -388,5 +387,35 @@ footer {
 
 .shake-element {
   animation: shake 0.35s ease-in-out;
+}
+
+/* --------------------------------------------------------------------------
+   Disabled Action Buttons & Diagnostics Formatting
+   -------------------------------------------------------------------------- */
+.btn-action-wrapper {
+  display: inline-flex;
+  position: relative;
+}
+
+.btn-action-wrapper.is-disabled {
+  cursor: not-allowed;
+}
+
+.btn-action-wrapper.is-disabled > * {
+  pointer-events: none;
+}
+
+#commit_message_warning ul {
+  padding-left: 1.25rem;
+  margin-top: 0.35rem;
+}
+
+#commit_message_warning li {
+  margin-bottom: 0.25rem;
+  line-height: 1.4;
+}
+
+#commit_message_warning li:last-child {
+  margin-bottom: 0;
 }
 
