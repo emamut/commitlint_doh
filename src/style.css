@@ -45,7 +45,7 @@ body {
 .navbar-custom {
   background-color: #0f172a;
   border-bottom: 1px solid #1e293b;
-  padding: 0.75rem 1rem;
+  padding: 0.45rem 1rem;
 }
 
 [data-bs-theme="dark"] .navbar-custom {
@@ -58,7 +58,8 @@ body {
   letter-spacing: -0.5px;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  font-size: 1.1rem;
 }
 
 .brand-icon {
@@ -67,10 +68,10 @@ body {
   justify-content: center;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  font-size: 0.95rem;
 }
 
 #theme_toggle_btn {
@@ -90,8 +91,8 @@ body {
 .main-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -100,17 +101,17 @@ body {
 }
 
 .main-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
 }
 
 /* --------------------------------------------------------------------------
    Form Controls
    -------------------------------------------------------------------------- */
 .form-label-custom {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #334155;
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -123,9 +124,9 @@ body {
 .form-control-custom,
 .form-select-custom {
   border: 1.5px solid var(--border-color);
-  border-radius: 10px;
-  padding: 0.65rem 0.85rem;
-  font-size: 0.95rem;
+  border-radius: 8px;
+  padding: 0.42rem 0.75rem;
+  font-size: 0.875rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease, color 0.2s ease;
   background-color: var(--bg-card);
   color: var(--text-primary);
@@ -141,7 +142,7 @@ body {
 .form-control-custom:focus,
 .form-select-custom:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
   outline: none;
 }
 
@@ -151,7 +152,7 @@ body {
 
 textarea.form-control-custom {
   resize: vertical;
-  min-height: 90px;
+  min-height: 65px;
 }
 
 /* --------------------------------------------------------------------------
@@ -160,22 +161,22 @@ textarea.form-control-custom {
 .sticky-preview {
   position: -webkit-sticky;
   position: sticky;
-  top: 90px;
+  top: 72px;
   z-index: 10;
 }
 
 .terminal-box {
   background-color: var(--terminal-bg);
   border: 1px solid var(--terminal-border);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.2);
+  box-shadow: 0 12px 20px -4px rgba(15, 23, 42, 0.2), 0 4px 6px -3px rgba(15, 23, 42, 0.15);
 }
 
 .terminal-header {
   background-color: var(--terminal-header);
   border-bottom: 1px solid var(--terminal-border);
-  padding: 0.75rem 1.25rem;
+  padding: 0.45rem 0.85rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -184,12 +185,12 @@ textarea.form-control-custom {
 .terminal-dots {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .terminal-dot {
-  width: 11px;
-  height: 11px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
 }
@@ -201,22 +202,22 @@ textarea.form-control-custom {
 .terminal-title {
   color: #94a3b8;
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
 .terminal-body {
-  padding: 1.25rem;
-  min-height: 160px;
-  max-height: 380px;
+  padding: 0.75rem 0.85rem;
+  min-height: 100px;
+  max-height: 280px;
   overflow-y: auto;
 }
 
 #commit_message {
   font-family: var(--font-mono);
   color: var(--terminal-text);
-  font-size: 0.95rem;
-  line-height: 1.6;
+  font-size: 0.875rem;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
   margin: 0;
@@ -227,10 +228,10 @@ textarea.form-control-custom {
    Validation Alert Container
    -------------------------------------------------------------------------- */
 #commit_message_container {
-  border-radius: 10px;
-  font-size: 0.88rem;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0;
   transition: all 0.25s ease;
 }
 
@@ -263,7 +264,7 @@ textarea.form-control-custom {
    -------------------------------------------------------------------------- */
 .accordion-custom .accordion-item {
   border: 1.5px solid var(--border-color);
-  border-radius: 10px !important;
+  border-radius: 8px !important;
   overflow: hidden;
   background-color: var(--bg-card);
 }
@@ -271,9 +272,9 @@ textarea.form-control-custom {
 .accordion-custom .accordion-button {
   background-color: var(--bg-main);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: var(--text-primary);
-  padding: 0.75rem 1rem;
+  padding: 0.45rem 0.75rem;
 }
 
 .accordion-custom .accordion-button:not(.collapsed) {
@@ -287,7 +288,7 @@ textarea.form-control-custom {
 }
 
 .footer-check-item {
-  padding: 0.4rem 0.6rem;
+  padding: 0.2rem 0.4rem;
   border-radius: 6px;
   transition: background-color 0.15s ease;
 }
@@ -303,8 +304,8 @@ textarea.form-control-custom {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-top: none;
-  border-radius: 0 0 14px 14px;
-  padding: 1.5rem;
+  border-radius: 0 0 10px 10px;
+  padding: 1rem 1.25rem;
 }
 
 .nav-tabs-custom {
@@ -314,10 +315,10 @@ textarea.form-control-custom {
 .nav-tabs-custom .nav-link {
   color: var(--text-muted);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   border: 1px solid transparent;
-  border-radius: 10px 10px 0 0;
-  padding: 0.65rem 1.15rem;
+  border-radius: 8px 8px 0 0;
+  padding: 0.42rem 0.75rem;
   transition: all 0.15s ease;
 }
 
@@ -335,8 +336,8 @@ textarea.form-control-custom {
   display: inline-block;
   font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 0.8rem;
-  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  padding: 0.12rem 0.4rem;
   border-radius: 4px;
 }
 
@@ -347,8 +348,8 @@ footer {
   margin-top: auto;
   border-top: 1px solid var(--border-color);
   background-color: var(--bg-card);
-  padding: 1.5rem 0;
-  font-size: 0.85rem;
+  padding: 0.75rem 0;
+  font-size: 0.8rem;
   color: var(--text-muted);
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
@@ -358,8 +359,8 @@ footer {
    -------------------------------------------------------------------------- */
 .kbd-shortcut {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 0.15rem 0.4rem;
+  font-size: 0.7rem;
+  padding: 0.12rem 0.35rem;
   border-radius: 4px;
   letter-spacing: 0.5px;
   background-color: rgba(255, 255, 255, 0.2);
@@ -406,13 +407,13 @@ footer {
 }
 
 #commit_message_warning ul {
-  padding-left: 1.25rem;
-  margin-top: 0.35rem;
+  padding-left: 1.15rem;
+  margin-top: 0.25rem;
 }
 
 #commit_message_warning li {
-  margin-bottom: 0.25rem;
-  line-height: 1.4;
+  margin-bottom: 0.2rem;
+  line-height: 1.35;
 }
 
 #commit_message_warning li:last-child {
