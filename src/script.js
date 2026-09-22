@@ -3,8 +3,11 @@
 // ==========================================================================
 
 import * as bootstrap from 'bootstrap';
+import { t, getLanguage, applyLanguage, toggleLanguage, onLanguageChange, getSavedLanguage } from './i18n.js';
+
 if (typeof window !== 'undefined') {
     window.bootstrap = bootstrap;
+    window.i18n = { t, getLanguage, applyLanguage, toggleLanguage };
 }
 
 if (document.readyState === "loading") {
@@ -63,13 +66,13 @@ function main() {
     }
 
     class lint_warning_messages {
-        type_must = "Debes seleccionar un tipo de commit válido (ej: feat, fix, chore, docs).";
-        subject_must = "Debes ingresar una descripción corta (subject) después de los dos puntos.";
-        message_length = "La primera línea tiene demasiados caracteres (se recomienda un máximo de 50 caracteres).";
-        backslash_never = "No se permiten barras invertidas (\\) en el mensaje de commit.";
-        scope_no_whitespace = "El ámbito (scope) no debe contener espacios en blanco.";
-        period_never = "La descripción corta no debe terminar con un punto final (.).";
-        format_invalid = "El formato no cumple con la especificación de Conventional Commits (tipo[(ámbito)][!]: descripción).";
+        get type_must() { return t("lint_type_must"); }
+        get subject_must() { return t("lint_subject_must"); }
+        get message_length() { return t("lint_message_length"); }
+        get backslash_never() { return t("lint_backslash_never"); }
+        get scope_no_whitespace() { return t("lint_scope_no_whitespace"); }
+        get period_never() { return t("lint_period_never"); }
+        get format_invalid() { return t("lint_format_invalid"); }
 
         reasons = [];
 
@@ -121,12 +124,12 @@ function main() {
                 if (copy_button) {
                     copy_button.removeAttribute("disabled");
                     copy_button.classList.remove("disabled");
-                    copy_button.setAttribute("title", `Copiar mensaje generado (${shortcutLabel} o Alt+C)`);
+                    copy_button.setAttribute("title", t("copy_msg_title", { shortcut: shortcutLabel }));
                 }
                 if (copy_git_btn) {
                     copy_git_btn.removeAttribute("disabled");
                     copy_git_btn.classList.remove("disabled");
-                    copy_git_btn.setAttribute("title", `Copiar como comando git commit (${gitShortcutLabel})`);
+                    copy_git_btn.setAttribute("title", t("copy_git_title", { shortcut: gitShortcutLabel }));
                 }
                 if (copy_btn_wrapper) {
                     copy_btn_wrapper.classList.remove("is-disabled");
@@ -144,13 +147,13 @@ function main() {
                 }
                 if (commit_message_warning) {
                     commit_message_warning.innerHTML = `
-                        <div class="fw-bold mb-1">✓ ¡Commit válido y listo para usar!</div>
-                        <div class="small">El formato cumple con la especificación de Conventional Commits. Puedes copiar el mensaje o el comando git.</div>
+                        <div class="fw-bold mb-1">${escapeHtml(t("lint_valid_title"))}</div>
+                        <div class="small">${escapeHtml(t("lint_valid_desc"))}</div>
                     `;
                 }
                 if (status_badge) {
                     status_badge.className = "badge bg-success";
-                    status_badge.innerHTML = '<i class="bi bi-check-circle me-1"></i> Formato válido';
+                    status_badge.innerHTML = `<i class="bi bi-check-circle me-1"></i> ${escapeHtml(t("status_valid"))}`;
                 }
             } else {
                 if (copy_button) {
@@ -162,7 +165,7 @@ function main() {
                     copy_git_btn.classList.add("disabled");
                 }
 
-                const reasonsTooltip = "No se puede crear el commit:\n" + reasons.map(r => `• ${r}`).join("\n");
+                const reasonsTooltip = `${t("feedback_cannot_create")}:\n` + reasons.map(r => `• ${r}`).join("\n");
                 if (copy_button) copy_button.setAttribute("title", reasonsTooltip);
                 if (copy_git_btn) copy_git_btn.setAttribute("title", reasonsTooltip);
                 if (copy_btn_wrapper) {
@@ -182,10 +185,10 @@ function main() {
                 }
                 if (commit_message_warning) {
                     const countHeader = reasons.length === 1 
-                        ? 'No se puede crear el commit por la siguiente razón:' 
-                        : 'No se puede crear el commit por las siguientes razones:';
+                        ? t("lint_reasons_single") 
+                        : t("lint_reasons_plural");
                     commit_message_warning.innerHTML = `
-                        <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i> ${countHeader}</div>
+                        <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i> ${escapeHtml(countHeader)}</div>
                         <ul class="mb-0 ps-3">
                             ${reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}
                         </ul>
@@ -193,7 +196,7 @@ function main() {
                 }
                 if (status_badge) {
                     status_badge.className = "badge bg-warning text-dark";
-                    status_badge.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i> No permitido / Incompleto';
+                    status_badge.innerHTML = `<i class="bi bi-exclamation-circle me-1"></i> ${escapeHtml(t("status_invalid"))}`;
                 }
             }
         }
@@ -212,7 +215,7 @@ function main() {
 
         commit_msg_first_line_length(msg) {
             if (msg && msg.length > 50) {
-                lwm.display_lint_message(`La primera línea tiene ${msg.length} caracteres (el estándar recomienda un máximo de 50 caracteres para evitar truncamientos en Git).`);
+                lwm.display_lint_message(t("lint_line_len_dynamic", { len: msg.length }));
             }
         }
 
@@ -640,18 +643,26 @@ function main() {
             message_to_be_linted += "\n\n" + commit_body;
         }
 
-        // Handle footers
+        // Handle footers with standard Conventional Commits tokens
+        const footerTokens = {
+            footer_breaking_changes: "BREAKING CHANGE:",
+            footer_fixes: "Fixes: #",
+            footer_deprecated: "Deprecated:",
+            footer_closes: "Closes: #",
+            footer_reviewed: "Reviewed-by:"
+        };
+
         let footer_breaking_changes_lbl = document.querySelector('label[for="footer_breaking_changes"]');
         let footer_fixes_lbl = document.querySelector('label[for="footer_fixes"]');
         let footer_deprecated_lbl = document.querySelector('label[for="footer_deprecated"]');
         let footer_closes_lbl = document.querySelector('label[for="footer_closes"]');
         let footer_reviewed_lbl = document.querySelector('label[for="footer_reviewed"]');
 
-        if (footer_breaking_changes_lbl) commit_footer = footer_toggle(footer_breaking_changes, footer_breaking_changes_lbl, commit_footer);
-        if (footer_fixes_lbl) commit_footer = footer_toggle(footer_fixes, footer_fixes_lbl, commit_footer);
-        if (footer_deprecated_lbl) commit_footer = footer_toggle(footer_deprecated, footer_deprecated_lbl, commit_footer);
-        if (footer_closes_lbl) commit_footer = footer_toggle(footer_closes, footer_closes_lbl, commit_footer);
-        if (footer_reviewed_lbl) commit_footer = footer_toggle(footer_reviewed, footer_reviewed_lbl, commit_footer);
+        if (footer_breaking_changes_lbl) commit_footer = footer_toggle(footer_breaking_changes, footerTokens.footer_breaking_changes, commit_footer);
+        if (footer_fixes_lbl) commit_footer = footer_toggle(footer_fixes, footerTokens.footer_fixes, commit_footer);
+        if (footer_deprecated_lbl) commit_footer = footer_toggle(footer_deprecated, footerTokens.footer_deprecated, commit_footer);
+        if (footer_closes_lbl) commit_footer = footer_toggle(footer_closes, footerTokens.footer_closes, commit_footer);
+        if (footer_reviewed_lbl) commit_footer = footer_toggle(footer_reviewed, footerTokens.footer_reviewed, commit_footer);
 
         if (commit_footer !== "") {
             let number_of_characters = 72;
@@ -734,12 +745,12 @@ function main() {
         let toastMsg = "";
         if (reasons && reasons.length > 0) {
             if (reasons.length === 1) {
-                toastMsg = `<strong>No se puede crear el commit:</strong><br>${escapeHtml(reasons[0])}`;
+                toastMsg = `<strong>${escapeHtml(t("feedback_cannot_create"))}:</strong><br>${escapeHtml(reasons[0])}`;
             } else {
-                toastMsg = `<strong>No se puede crear el commit (${reasons.length} razones):</strong><br>${reasons.map(r => `• ${escapeHtml(r)}`).join('<br>')}`;
+                toastMsg = `<strong>${escapeHtml(t("feedback_cannot_create"))} (${reasons.length} ${escapeHtml(t("feedback_reasons"))}):</strong><br>${reasons.map(r => `• ${escapeHtml(r)}`).join('<br>')}`;
             }
         } else {
-            toastMsg = "<strong>No se puede crear el commit:</strong> completa los campos requeridos antes de copiar";
+            toastMsg = `<strong>${escapeHtml(t("feedback_cannot_create"))}:</strong> ${escapeHtml(t("feedback_fill_required"))}`;
         }
 
         showToast(toastMsg, "warning");
@@ -781,29 +792,29 @@ function main() {
         let copyText = document.getElementById(div_id);
         let copyBtn = document.getElementById("copy_to_clipboard");
         let copyText_with_newlines = copyText ? br2nl(copyText.innerText) : "";
-        const defaultHtml = `<i class="bi bi-clipboard"></i> <span>Copiar Mensaje</span> <kbd class="badge bg-white text-dark bg-opacity-25 ms-1 small kbd-shortcut" id="copy_shortcut_kbd">${shortcutLabel}</kbd>`;
-        const successHtml = `<i class="bi bi-check2-circle"></i> <span>¡Copiado!</span>`;
+        const defaultHtml = `<i class="bi bi-clipboard"></i> <span>${escapeHtml(t("btn_copy_msg"))}</span> <kbd class="badge bg-white text-dark bg-opacity-25 ms-1 small kbd-shortcut" id="copy_shortcut_kbd">${shortcutLabel}</kbd>`;
+        const successHtml = `<i class="bi bi-check2-circle"></i> <span>${escapeHtml(t("btn_copied"))}</span>`;
 
         copyStringToClipboard(
             copyText_with_newlines,
             copyBtn,
             defaultHtml,
             successHtml,
-            "Mensaje de commit copiado al portapapeles"
+            t("toast_copied_msg")
         );
     }
 
     function copyGitCommand(gitCmd) {
         let copyGitBtn = document.getElementById("copy_git_cmd");
-        const defaultGitHtml = `<i class="bi bi-terminal"></i> <span>git commit -m</span> <kbd class="badge bg-white text-white bg-opacity-25 ms-1 small kbd-shortcut" id="git_shortcut_kbd">${gitShortcutLabel}</kbd>`;
-        const successGitHtml = `<i class="bi bi-check2-circle"></i> <span>¡Comando Copiado!</span>`;
+        const defaultGitHtml = `<i class="bi bi-terminal"></i> <span>${escapeHtml(t("btn_copy_git"))}</span> <kbd class="badge bg-white text-white bg-opacity-25 ms-1 small kbd-shortcut" id="git_shortcut_kbd">${gitShortcutLabel}</kbd>`;
+        const successGitHtml = `<i class="bi bi-check2-circle"></i> <span>${escapeHtml(t("btn_git_copied"))}</span>`;
 
         copyStringToClipboard(
             gitCmd,
             copyGitBtn,
             defaultGitHtml,
             successGitHtml,
-            "Comando git commit copiado al portapapeles"
+            t("toast_copied_git")
         );
     }
 
@@ -895,23 +906,23 @@ function main() {
         return textAreaObj.value;
     }
 
-    function footer_toggle(selected_bool, input_label, commit_footer) {
+    function footer_toggle(selected_bool, token, commit_footer) {
         let footerTextarea = document.getElementById("commit_footer");
-        if (!footerTextarea || !input_label) return commit_footer;
+        if (!footerTextarea || !token) return commit_footer;
 
         if (selected_bool === true) {
-            let string = input_label.innerText;
-            let pattern = new RegExp(string, "g");
+            let escapedToken = token.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+            let pattern = new RegExp(escapedToken, "g");
             let text = footerTextarea.value;
             let is_text_in_footer = pattern.test(text);
             if (!is_text_in_footer) {
-                footerTextarea.value = input_label.innerText + (commit_footer ? " " + commit_footer : "");
+                footerTextarea.value = token + (commit_footer ? " " + commit_footer : "");
                 commit_footer = footerTextarea.value;
             } else {
                 footerTextarea.value = commit_footer;
             }
         } else {
-            commit_footer = deleteValue(footerTextarea, input_label.innerText);
+            commit_footer = deleteValue(footerTextarea, token);
         }
         return commit_footer;
     }
@@ -948,6 +959,29 @@ function main() {
         return result.join('\n');
     }
 
+    function initLanguageToggle() {
+        const langBtn = document.getElementById("lang_toggle_btn");
+        if (langBtn) {
+            langBtn.addEventListener("click", () => {
+                toggleLanguage();
+            });
+        }
+        onLanguageChange(() => {
+            update_commit_message();
+            // Refresh theme toggle text to current language
+            const activeTheme = document.documentElement.getAttribute("data-bs-theme") || "light";
+            const themeText = document.getElementById("theme_toggle_text");
+            const themeBtn = document.getElementById("theme_toggle_btn");
+            if (themeText) {
+                themeText.innerText = activeTheme === "dark" ? t("theme_light") : t("theme_dark");
+            }
+            if (themeBtn) {
+                themeBtn.setAttribute("title", activeTheme === "dark" ? t("theme_title_light") : t("theme_title_dark"));
+            }
+        });
+        applyLanguage(getSavedLanguage());
+    }
+
     function initThemeToggle() {
         const themeBtn = document.getElementById("theme_toggle_btn");
         const themeIcon = document.getElementById("theme_toggle_icon");
@@ -965,12 +999,12 @@ function main() {
             if (themeIcon) {
                 if (theme === "dark") {
                     themeIcon.className = "bi bi-sun-fill text-warning";
-                    if (themeText) themeText.innerText = "Modo Claro";
-                    if (themeBtn) themeBtn.setAttribute("title", "Cambiar a modo claro");
+                    if (themeText) themeText.innerText = t("theme_light");
+                    if (themeBtn) themeBtn.setAttribute("title", t("theme_title_light"));
                 } else {
                     themeIcon.className = "bi bi-moon-stars-fill text-light";
-                    if (themeText) themeText.innerText = "Modo Oscuro";
-                    if (themeBtn) themeBtn.setAttribute("title", "Cambiar a modo oscuro");
+                    if (themeText) themeText.innerText = t("theme_dark");
+                    if (themeBtn) themeBtn.setAttribute("title", t("theme_title_dark"));
                 }
             }
         }
@@ -994,6 +1028,7 @@ function main() {
         }
     }
 
+    initLanguageToggle();
     initThemeToggle();
     initKeyboardShortcuts();
 

@@ -74,15 +74,22 @@ body {
   font-size: 0.95rem;
 }
 
-#theme_toggle_btn {
+#theme_toggle_btn,
+#lang_toggle_btn {
   border-color: rgba(255, 255, 255, 0.25);
   transition: all 0.2s ease;
 }
 
-#theme_toggle_btn:hover {
+#theme_toggle_btn:hover,
+#lang_toggle_btn:hover {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.5);
   transform: translateY(-1px);
+}
+
+#lang_toggle_code {
+  font-size: 0.76rem;
+  letter-spacing: 0.5px;
 }
 
 /* --------------------------------------------------------------------------
