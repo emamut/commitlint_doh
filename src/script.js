@@ -41,6 +41,38 @@ function main() {
 
     displayVersion("js_version");
 
+    function initUrlHashProtection() {
+        function removeHash() {
+            if (window.location.hash || window.location.href.includes('#')) {
+                history.replaceState(null, '', window.location.pathname + window.location.search);
+            }
+        }
+
+        removeHash();
+        window.addEventListener('hashchange', removeHash);
+
+        document.addEventListener('click', (e) => {
+            const anchor = e.target.closest('a');
+            if (anchor) {
+                const href = anchor.getAttribute('href');
+                if (href === '#' || href === '') {
+                    e.preventDefault();
+                    removeHash();
+                }
+            }
+        });
+
+        const brand = document.querySelector('.navbar-brand');
+        if (brand) {
+            brand.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                removeHash();
+            });
+        }
+    }
+    initUrlHashProtection();
+
     // Enable Bootstrap tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     [...tooltipTriggerList].forEach((tooltipTriggerEl) => {
