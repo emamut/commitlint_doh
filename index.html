@@ -88,33 +88,33 @@
   </nav>
 
   <!-- Main Container -->
-  <main class="container-xl my-4 my-lg-5 flex-grow-1">
+  <main class="container-xl my-3 my-lg-4 flex-grow-1">
     
     <!-- Hero / Intro -->
-    <div class="row mb-4">
+    <div class="row mb-3">
       <div class="col-12 text-center text-md-start">
-        <h1 class="h3 fw-bold text-body mb-1">Editor & Validador de Commits Convencionales</h1>
-        <p class="text-muted mb-0">Escribe commits claros, estandarizados y sin esfuerzo con validación sintáctica en tiempo real.</p>
+        <h1 class="h4 fw-bold text-body mb-1">Editor & Validador de Commits Convencionales</h1>
+        <p class="text-muted small mb-0">Escribe commits claros, estandarizados y sin esfuerzo con validación sintáctica en tiempo real.</p>
       </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-3">
       
       <!-- LEFT COLUMN: Form Builder -->
       <div class="col-12 col-lg-7">
-        <div class="main-card p-4">
-          <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-            <h2 class="h5 fw-bold mb-0 d-flex align-items-center gap-2">
+        <div class="main-card p-3 p-md-4">
+          <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+            <h2 class="h6 fw-bold mb-0 d-flex align-items-center gap-2">
               <i class="bi bi-sliders2 text-primary"></i>
               <span>Construir Mensaje</span>
             </h2>
-            <button id="btn_clear_form" type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+            <button id="btn_clear_form" type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 py-1 px-2">
               <i class="bi bi-arrow-counterclockwise"></i>
               <span>Limpiar</span>
             </button>
           </div>
 
-          <div class="linterContainer d-flex flex-column gap-3">
+          <div class="linterContainer d-flex flex-column gap-2">
             
             <!-- Row 1: Type, Scope & Breaking Exclamation -->
             <div class="row g-2">
@@ -170,10 +170,10 @@
                 <label for="commit_subject" class="form-label-custom mb-0">
                   <span>Descripción Corta (Subject) <span class="text-danger">*</span></span>
                 </label>
-                <span id="first_line_counter" class="badge bg-secondary">0 / 50</span>
+                <span id="first_line_counter" class="badge bg-secondary py-1 px-2">0 / 50</span>
               </div>
               <input id="commit_subject" type="text" class="form-control form-control-custom mono-input" placeholder="ej: add authentication middleware for api routes" title="Usa modo imperativo presente: 'add' no 'added'. En minúsculas y sin punto al final." data-bs-toggle="tooltip">
-              <div class="form-text small text-muted">
+              <div class="form-text text-muted mt-1" style="font-size: 0.76rem;">
                 <i class="bi bi-info-circle me-1"></i> Modo imperativo ("add" en vez de "added"), sin mayúscula inicial y sin punto final.
               </div>
             </div>
@@ -184,7 +184,7 @@
                 <span>Cuerpo del Mensaje (Body)</span>
                 <span class="badge bg-body-secondary text-body-secondary border">Opcional</span>
               </label>
-              <textarea id="commit_body" class="form-control form-control-custom mono-input" rows="4" placeholder="Describe la motivación del cambio y el contraste con el comportamiento anterior..." title="Líneas envueltas automáticamente a 72 caracteres con soporte de viñetas" data-bs-toggle="tooltip"></textarea>
+              <textarea id="commit_body" class="form-control form-control-custom mono-input" rows="3" placeholder="Describe la motivación del cambio y el contraste con el comportamiento anterior..." title="Líneas envueltas automáticamente a 72 caracteres con soporte de viñetas" data-bs-toggle="tooltip"></textarea>
             </div>
 
             <!-- Row 4: Footers Section -->
@@ -198,41 +198,36 @@
                     </button>
                   </h3>
                   <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingFooter" data-bs-parent="#accordionFooter">
-                    <div class="accordion-body bg-body-tertiary">
+                    <div class="accordion-body bg-body-tertiary p-2">
                       <div class="row g-2">
                         <div class="col-sm-6">
                           <div class="form-check footer-check-item">
                             <input class="form-check-input" type="checkbox" value="" id="footer_breaking_changes">
-                            <label class="form-check-label fw-semibold" for="footer_breaking_changes">BREAKING CHANGE:</label>
-                            <small class="text-muted d-block ms-1">Indica ruptura de compatibilidad</small>
+                            <label class="form-check-label small" for="footer_breaking_changes"><span class="fw-semibold">BREAKING CHANGE:</span> <span class="text-muted" style="font-size: 0.75rem;">Ruptura de compatibilidad</span></label>
                           </div>
                         </div>
                         <div class="col-sm-6">
                           <div class="form-check footer-check-item">
                             <input class="form-check-input" type="checkbox" value="" id="footer_fixes">
-                            <label class="form-check-label fw-semibold" for="footer_fixes">Fixes: #</label>
-                            <small class="text-muted d-block ms-1">Referencia a issue corregida</small>
+                            <label class="form-check-label small" for="footer_fixes"><span class="fw-semibold">Fixes: #</span> <span class="text-muted" style="font-size: 0.75rem;">Referencia a issue</span></label>
                           </div>
                         </div>
                         <div class="col-sm-6">
                           <div class="form-check footer-check-item">
                             <input class="form-check-input" type="checkbox" value="" id="footer_closes">
-                            <label class="form-check-label fw-semibold" for="footer_closes">Closes: #</label>
-                            <small class="text-muted d-block ms-1">Cierra issue al fusionar</small>
+                            <label class="form-check-label small" for="footer_closes"><span class="fw-semibold">Closes: #</span> <span class="text-muted" style="font-size: 0.75rem;">Cierra issue</span></label>
                           </div>
                         </div>
                         <div class="col-sm-6">
                           <div class="form-check footer-check-item">
                             <input class="form-check-input" type="checkbox" value="" id="footer_deprecated">
-                            <label class="form-check-label fw-semibold" for="footer_deprecated">Deprecated:</label>
-                            <small class="text-muted d-block ms-1">Funcionalidad obsoleta</small>
+                            <label class="form-check-label small" for="footer_deprecated"><span class="fw-semibold">Deprecated:</span> <span class="text-muted" style="font-size: 0.75rem;">Obsoleto</span></label>
                           </div>
                         </div>
                         <div class="col-sm-6">
                           <div class="form-check footer-check-item">
                             <input class="form-check-input" type="checkbox" value="" id="footer_reviewed">
-                            <label class="form-check-label fw-semibold" for="footer_reviewed">Reviewed-by:</label>
-                            <small class="text-muted d-block ms-1">Aprobador del cambio</small>
+                            <label class="form-check-label small" for="footer_reviewed"><span class="fw-semibold">Reviewed-by:</span> <span class="text-muted" style="font-size: 0.75rem;">Aprobador</span></label>
                           </div>
                         </div>
                       </div>
@@ -251,7 +246,7 @@
 
       <!-- RIGHT COLUMN: Sticky Real-time Preview & Validation -->
       <div class="col-12 col-lg-5">
-        <div class="sticky-preview d-flex flex-column gap-3">
+        <div class="sticky-preview d-flex flex-column gap-2">
           
           <!-- Terminal Window Preview -->
           <div class="terminal-box">
@@ -273,16 +268,16 @@
               <div id="wip_message_to_be_linted" hidden>message to be linted</div>
             </div>
 
-            <div class="p-3 bg-dark border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2" id="copy_buttons_container">
+            <div class="p-2 bg-dark border-top border-secondary border-opacity-25 d-flex flex-wrap gap-2" id="copy_buttons_container">
               <div id="copy_to_clipboard_wrapper" class="btn-action-wrapper flex-grow-1 is-disabled" title="No se puede crear el commit">
-                <button id="copy_to_clipboard" type="button" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" disabled="disabled" accesskey="c" title="Copiar mensaje generado (Ctrl+Enter o Alt+C)">
+                <button id="copy_to_clipboard" type="button" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center gap-2 py-1.5" disabled="disabled" accesskey="c" title="Copiar mensaje generado (Ctrl+Enter o Alt+C)">
                   <i class="bi bi-clipboard"></i>
                   <span>Copiar Mensaje</span>
                   <kbd class="badge bg-white text-dark bg-opacity-25 ms-1 small kbd-shortcut" id="copy_shortcut_kbd">Ctrl+↵</kbd>
                 </button>
               </div>
               <div id="copy_git_cmd_wrapper" class="btn-action-wrapper is-disabled" title="No se puede crear el commit">
-                <button id="copy_git_cmd" type="button" class="btn btn-outline-light d-flex align-items-center justify-content-center gap-2" disabled="disabled" title="Copiar como comando git commit (Ctrl+Shift+Enter)">
+                <button id="copy_git_cmd" type="button" class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center gap-2 py-1.5" disabled="disabled" title="Copiar como comando git commit (Ctrl+Shift+Enter)">
                   <i class="bi bi-terminal"></i>
                   <span>git commit -m</span>
                   <kbd class="badge bg-white text-white bg-opacity-25 ms-1 small kbd-shortcut" id="git_shortcut_kbd">Ctrl+⇧+↵</kbd>
@@ -306,38 +301,38 @@
           </div>
 
           <!-- Quick Tips Card -->
-          <div class="card main-card border p-3">
-            <h3 class="h6 fw-bold mb-2 text-body d-flex align-items-center gap-2">
+          <div class="card main-card border p-2.5 p-sm-3">
+            <h3 class="h6 fw-bold mb-1.5 text-body d-flex align-items-center gap-2" style="font-size: 0.85rem;">
               <i class="bi bi-lightbulb text-warning"></i>
               <span>Estructura Rápida</span>
             </h3>
-            <div class="p-2 rounded-2 font-monospace small text-body-secondary border bg-body-tertiary">
+            <div class="p-2 rounded-2 font-monospace text-body-secondary border bg-body-tertiary" style="font-size: 0.78rem; line-height: 1.4;">
               <span class="text-primary fw-bold">&lt;tipo&gt;</span><span class="text-info">(&lt;ámbito&gt;)</span><span class="text-danger fw-bold">[!]</span>: <span class="text-body">&lt;descripción&gt;</span>
-              <br><br>
+              <br>
               <span class="text-secondary">[cuerpo opcional]</span>
-              <br><br>
+              <br>
               <span class="text-secondary">[footer(s) opcional(es)]</span>
             </div>
           </div>
 
           <!-- Keyboard Shortcuts Card -->
-          <div class="card main-card border p-3">
-            <h3 class="h6 fw-bold mb-2 text-body d-flex align-items-center gap-2">
+          <div class="card main-card border p-2.5 p-sm-3">
+            <h3 class="h6 fw-bold mb-1.5 text-body d-flex align-items-center gap-2" style="font-size: 0.85rem;">
               <i class="bi bi-keyboard text-primary"></i>
               <span>Atajos de Teclado</span>
             </h3>
-            <div class="small d-flex flex-column gap-2 text-body-secondary">
+            <div class="small d-flex flex-column gap-1.5 text-body-secondary" style="font-size: 0.8rem;">
               <div class="d-flex justify-content-between align-items-center">
                 <span>Copiar mensaje</span>
                 <span class="d-flex align-items-center gap-1">
-                  <kbd class="kbd-shortcut shortcut-primary">Ctrl+↵</kbd>
-                  <span class="text-muted small">o</span>
-                  <kbd class="kbd-shortcut shortcut-alt">Alt+C</kbd>
+                  <kbd class="kbd-shortcut">Ctrl+↵</kbd>
+                  <span class="text-muted" style="font-size: 0.72rem;">o</span>
+                  <kbd class="kbd-shortcut">Alt+C</kbd>
                 </span>
               </div>
               <div class="d-flex justify-content-between align-items-center">
                 <span>Copiar comando git</span>
-                <kbd class="kbd-shortcut shortcut-git">Ctrl+Shift+↵</kbd>
+                <kbd class="kbd-shortcut">Ctrl+Shift+↵</kbd>
               </div>
             </div>
           </div>
@@ -348,7 +343,7 @@
     </div>
 
     <!-- Documentation & Information Tabs Section -->
-    <div class="mt-5">
+    <div class="mt-3 mt-lg-4">
       <ul class="nav nav-tabs nav-tabs-custom" id="infoTabs" role="tablist">
         <li class="nav-item" role="presentation">
           <button class="nav-link active d-flex align-items-center gap-2" id="types-tab" data-bs-toggle="tab" data-bs-target="#tab-types" type="button" role="tab">
@@ -382,7 +377,7 @@
         <div class="tab-pane fade show active" id="tab-types" role="tabpanel">
           <h4 class="h6 fw-bold mb-3 text-uppercase text-muted">Estándar Conventional Commits</h4>
           <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-sm table-hover align-middle mb-0">
               <thead>
                 <tr>
                   <th style="width: 140px;">Tipo</th>
